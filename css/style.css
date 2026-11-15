@@ -454,11 +454,12 @@ fieldset.groupe{border:0;padding:0;min-width:0}
 .occasion-tete{display:flex;align-items:baseline;justify-content:space-between;gap:6px 24px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--bord)}
 .occasion-tete h3{font-size:clamp(26px,2.4vw,34px)}
 .occasion-tete p{color:var(--doux);font-size:16px}
-.occasion-grille{list-style:none;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:26px 12px}
+.occasion-grille{list-style:none;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px 12px}
 .occasion-grille .vedette{grid-column:span 2;grid-row:span 2}
 .occasion-grille .vedette .tuile-photo{flex:1;aspect-ratio:auto;min-height:0}
 .occasion-grille .vedette .tuile-nom{font-size:17px}
-.occasion:not(.ouverte) .occasion-grille > li:nth-child(n+8){display:none}
+/* Toujours la même structure : un grand gâteau et quatre petits, le reste derrière « Voir les N autres » */
+.occasion:not(.ouverte) .occasion-grille > li:nth-child(n+6){display:none}
 .voir-plus{margin-top:24px}
 .tuile-devis{display:flex}
 .tuile-devis > div{width:100%;aspect-ratio:3/4;border-radius:18px;background:var(--surface);padding:clamp(16px,1.6vw,24px);display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:8px}
@@ -491,10 +492,6 @@ fieldset.groupe{border:0;padding:0;min-width:0}
 .saveur-detail h4{font-size:26px}
 .saveur-detail p{margin-top:8px;color:var(--doux);font-size:16.5px;line-height:1.5}
 
-@media (max-width:999px){
-  .occasion-grille{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .occasion:not(.ouverte) .occasion-grille > li:nth-child(n+7){display:none}
-}
 @media (min-width:768px) and (max-width:1024px) and (orientation:portrait){
   .accueil-plus{order:4}
   .niche,.scene-on .niche{order:5}
@@ -510,8 +507,6 @@ fieldset.groupe{border:0;padding:0;min-width:0}
   .occasion-grille{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px}
   .occasion-grille .vedette{grid-row:auto}
   .occasion-grille .vedette .tuile-photo{flex:none;aspect-ratio:3/4}
-  .occasion:not(.ouverte) .occasion-grille > li:nth-child(n+7){display:revert}
-  .occasion:not(.ouverte) .occasion-grille > li:nth-child(n+8){display:none}
   .carte-scene{display:flex;flex-direction:column;align-items:stretch;gap:20px}
   .carte-texte{display:contents}
   #t-carte{order:1}
