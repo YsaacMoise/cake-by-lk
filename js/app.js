@@ -100,22 +100,34 @@
   if (racine.classList.contains('mur-occasion')) {
     const ancien = $('#mur'), tuiles = $$('.tuile', ancien);
     const GROUPES = [
-      { titre: 'Anniversaires et fêtes', texte: 'Layer cakes dès 75 €, number cakes dès 30 €.', f: ['anniversaire', 'baby', 'tahara'], vedette: (t) => t.classList.contains('place') },
-      { titre: 'Gâteaux à thème', texte: 'Le personnage, le club ou l’univers que vous voulez. Layer cakes dès 75 €.', f: ['theme'], vedette: (t) => t.querySelector('[data-vignette*="theme-stitch"]') },
-      { titre: 'Mariages', texte: 'Wedding cakes et pièces montées, sur devis, dès 5 € la part.', f: ['mariage'], vedette: (t) => t.querySelector('[data-vignette*="mariage-agrumes"]') },
+      { titre: 'Anniversaires et fêtes', texte: 'Layer cakes dès 75 €, number cakes dès 30 €.', f: ['anniversaire', 'baby', 'tahara'], vedette: (t) => t.classList.contains('place'), ordre: ['anniv-ahlem', 'anniv-oceane', 'number-18', 'baby-shower', 'anniv-fruits-rouges', 'anniv-brina', 'anniv-chocolats', 'number-50', 'number-40', 'tahara'] },
+      { titre: 'Gâteaux à thème', texte: 'Le personnage, le club ou l’univers que vous voulez. Layer cakes dès 75 €.', f: ['theme'], vedette: (t) => t.querySelector('[data-vignette*="theme-stitch"]'), ordre: ['theme-spiderman', 'theme-minnie', 'theme-pat-patrouille', 'theme-licorne', 'theme-roi-lion', 'theme-psg', 'theme-vaiana', 'theme-sirene', 'theme-barbie', 'theme-panda', 'theme-jungle'] },
+      { titre: 'Mariages', texte: 'Wedding cakes et pièces montées, sur devis, dès 5 € la part.', f: ['mariage'], vedette: (t) => t.querySelector('[data-vignette*="mariage-agrumes"]'), ordre: ['mariage-suspendu', 'mariage-nassim-cassandra', 'mariage-sabrina-ilies', 'mariage-sb', 'mariage-roses', 'mariage-cd'] },
     ];
     const bloc = document.createElement('div'); bloc.className = 'occasions'; bloc.id = 'mur';
     GROUPES.forEach((g, i) => {
-      const liste = tuiles.filter((t) => g.f.includes(t.dataset.f));
+      const rang = (t) => { const v = t.querySelector('[data-vignette]').dataset.vignette; const i = g.ordre.findIndex((o) => v.includes('/' + o + '-')); return i < 0 ? 99 : i; };
+      const liste = tuiles.filter((t) => g.f.includes(t.dataset.f)).sort((a, b) => rang(a) - rang(b));
       const v = liste.find(g.vedette); if (v) { v.classList.add('vedette'); liste.splice(liste.indexOf(v), 1); liste.unshift(v); }
       const sec = document.createElement('section'); sec.className = 'occasion'; sec.setAttribute('aria-labelledby', 'occ-' + i);
-      sec.innerHTML = `<div class="occasion-tete"><h3 id="occ-${i}">${g.titre}</h3><p>${g.texte}</p></div><ul class="occasion-grille"></ul><button class="btn btn-clair voir-plus" type="button" aria-expanded="false">Voir les ${liste.length} gâteaux</button>`;
+      sec.innerHTML = `<div class="occasion-tete"><h3 id="occ-${i}">${g.titre}</h3><p>${g.texte}</p></div><ul class="occasion-grille"></ul><button class="btn btn-clair voir-plus" type="button" aria-expanded="false">Voir les autres gâteaux</button>`;
       liste.forEach((t) => $('.occasion-grille', sec).appendChild(t));
-      $('.voir-plus', sec).addEventListener('click', (e) => { sec.classList.add('ouverte'); e.currentTarget.hidden = true; });
+      $('.voir-plus', sec).addEventListener('click', (e) => { sec.dataset.ouvert = 'oui'; sec.classList.add('ouverte'); e.currentTarget.hidden = true; });
       bloc.appendChild(sec);
     });
     const note = $('#murNote'); if (note) { note.hidden = true; bloc.appendChild(note); }
     ancien.replaceWith(bloc);
+    /* Le bouton dit combien de gâteaux il reste à voir à cette largeur d'écran. S'il n'en reste qu'un ou deux, pas de bouton :
+       ce sont les derniers de la sélection, et les montrer laisserait une rangée à moitié vide */
+    const majVoirPlus = () => $$('.occasion', bloc).forEach((sec) => {
+      if (sec.dataset.ouvert === 'oui') return;
+      const n = $$('.occasion-grille > li', sec).filter((li) => getComputedStyle(li).display === 'none').length;
+      const b = $('.voir-plus', sec);
+      if (n <= 2) b.hidden = true;
+      else { b.hidden = false; b.textContent = `Voir les ${n} autres gâteaux`; }
+    });
+    majVoirPlus();
+    ['(max-width:767px)', '(max-width:999px)'].forEach((q) => matchMedia(q).addEventListener('change', majVoirPlus));
   }
   const mur = $('#mur');
   /* L'ordre du clavier suit l'ordre visuel : la case du gâteau qui tourne est déplacée dans le code (2e case sous 1000 px, 5e au-dessus) */
@@ -285,7 +297,7 @@
   })();
 
   /* ---------- La demande ---------- */
-  const demande = { occasion: '', gateau: '', parts: '', partsPlus: 0, partsNumber: '', chiffre: '', invites: 0, saveur: '', texte: '', couleurs: '', idees: '', sables: 0, cupcakes: 0, popcakes: 0, date: '', ville: '', nom: '', tel: '', allergies: '', mot: '', modele: '', modeleImg: '', modeleFete: '' };
+  const demande = { occasion: '', gateau: '', parts: '', partsPlus: 0, partsNumber: '', chiffre: '', invites: 0, saveur: '', texte: '', theme: '', couleurs: '', idees: '', sables: 0, cupcakes: 0, popcakes: 0, date: '', ville: '', nom: '', tel: '', allergies: '', mot: '', modele: '', modeleImg: '', modeleFete: '' };
   const DEFAUTS = JSON.parse(JSON.stringify(demande));
   const NOMS = ['Fête', 'Gâteau', 'Saveur', 'Décor', 'Date', 'Vous'];
   const DOUCEURS = [['sables', 'Sablés', 'Un sablé', 'sablé'], ['cupcakes', 'Cupcakes', 'Un cupcake', 'cupcake'], ['popcakes', 'Popcakes', 'Un popcake', 'popcake']];
@@ -356,6 +368,7 @@
     demande.modele = b.dataset.titre; demande.modeleImg = b.dataset.vignette;
     // un gâteau à thème va avec toutes les fêtes sauf le mariage : le modèle reste si la fête change
     demande.modeleFete = b.closest('.tuile').dataset.f === 'theme' ? '*' : demande.occasion;
+    if (b.closest('.tuile').dataset.f === 'theme') demande.theme = b.querySelector('.tuile-nom').textContent;
     refFinale = '';
     allerA(1); versFormulaire();
   });
@@ -424,12 +437,14 @@
     ? { aide: 'Les prénoms ou les initiales sont écrits en lettres dorées. Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénoms, initiales ou texte sur le gâteau', exemple: 'Vos prénoms, vos initiales, la date', vide: 'Vos prénoms' }
     : demande.gateau === 'number'
       ? { aide: 'Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénom ou texte à écrire', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom' }
-      : { aide: 'Le prénom est écrit en lettres dorées. Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénom ou texte sur le gâteau', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom' };
+      : { aide: 'Le prénom est écrit en lettres dorées, ou dans les couleurs du thème. Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénom ou texte sur le gâteau', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom' };
+  /* Un thème ou un personnage : pour tous les gâteaux sauf le wedding cake */
+  const champTheme = () => demande.gateau === 'wedding' ? '' : `<div class="champ"><label for="f-theme">Un thème ou un personnage ? (facultatif)</label><input id="f-theme" name="theme" maxlength="60" value="${esc(demande.theme)}" placeholder="Stitch, la jungle, le PSG, une licorne…"></div>`;
   function couleursEtIdees() {
     return `<fieldset class="champ groupe"><legend class="legende">Couleurs</legend><div class="pastilles">
       ${[['Blanc et or', '#FFFFFF', '#B08532'], ['Rose poudré', '#F3CBD1'], ['Rouge et rose', '#C8435F'], ['Pastel', '#CFE6D8'], ['Couleurs vives', '#F2A33A'], ['Conseillez-moi', '#E8DDD0']].map(([l, a, b]) => `<label${demande.couleurs === l ? ' class="choisi"' : ''}><input type="radio" name="couleurs" value="${l}"${demande.couleurs === l ? ' checked' : ''}><i style="background:${b ? `linear-gradient(90deg,${a} 50%,${b} 50%)` : a}"></i>${l}</label>`).join('')}
       </div></fieldset>
-      <div class="champ"><label for="f-idees">Vos idées de décor</label><textarea id="f-idees" name="idees" rows="3" placeholder="Fleurs fraîches, thème, couleur précise, personnage…">${esc(demande.idees)}</textarea></div>`;
+      <div class="champ"><label for="f-idees">Vos idées de décor</label><textarea id="f-idees" name="idees" rows="3" placeholder="Fleurs fraîches, couleur précise, accessoires…">${esc(demande.idees)}</textarea></div>`;
   }
   const VUES = [
     () => `<div class="etape"><h3 id="q-etape">Que fêtez-vous ?</h3>${groupe('occasion', FETES.map(f => ({ v: f, l: f })), demande.occasion, 'deux')}</div>`,
@@ -446,6 +461,7 @@
     () => `<div class="etape"><h3 id="q-etape">Quelle saveur ?</h3>${demande.gateau === 'number' ? '<p class="aide">Je vous confirme la garniture en vous répondant.</p>' : ''}${groupe('saveur', saveursPour(demande.gateau).map(s => ({ v: s.nom, l: s.nom, s: s.desc, img: s.img })), demande.saveur)}</div>`,
     () => { const d = decorPour(); return `<div class="etape"><h3 id="q-etape">Quel décor ?</h3><p class="aide">${d.aide}</p>
       <div class="champ"><label for="f-texte">${d.label}</label><input id="f-texte" name="texte" maxlength="40" value="${esc(demande.texte)}" placeholder="${d.exemple}"><p class="apercu-decor" id="apercuDecor" aria-hidden="true">${esc(demande.texte) || d.vide}</p></div>
+      ${champTheme()}
       ${couleursEtIdees()}
       <fieldset class="champ groupe"><legend class="legende">Douceurs en plus, 3 € pièce</legend><div class="douceurs">${DOUCEURS.map(([k, l, un]) => `<div class="douceur"><label for="f-${k}">${l}</label>${compteur(k, un, demande[k], 200)}</div>`).join('')}</div></fieldset></div>`; },
     () => `<div class="etape"><h3 id="q-etape">Pour quand et où ?</h3><p class="aide">Comptez en général 4 à 5 jours avant la fête. Je vous dis si je suis disponible ce jour-là.</p>
@@ -598,7 +614,7 @@
     const prenom = demande.texte.trim();
     const r = $('#rPrenom');
     r.textContent = prenom || 'Votre gâteau'; r.classList.toggle('vide', !prenom); ajuster(r);
-    const lignes = [['Modèle', demande.modele], ['Fête', demande.occasion], ['Gâteau', descGateau()], ['Saveur', demande.saveur], ['Couleurs', demande.couleurs], ['Douceurs', listeDouceurs()], ['Date', dateLongue()], ['Lieu de la fête', demande.ville]].filter(l => l[1]);
+    const lignes = [['Modèle', demande.modele], ['Fête', demande.occasion], ['Gâteau', descGateau()], ['Thème', demande.gateau === 'wedding' ? '' : demande.theme.trim()], ['Saveur', demande.saveur], ['Couleurs', demande.couleurs], ['Douceurs', listeDouceurs()], ['Date', dateLongue()], ['Lieu de la fête', demande.ville]].filter(l => l[1]);
     $('#rListe').innerHTML = lignes.map(([a, b]) => `<dt>${a}</dt><dd>${esc(b)}</dd>`).join('');
     const t = textePrix();
     $('#rTotal').innerHTML = `${t.apartir ? '<small>à partir de</small>' : ''}${t.grand ? `<b>${t.grand}</b>` : ''}<small>${t.note}</small>`;
@@ -620,6 +636,7 @@
     L.push(`Fête : ${demande.occasion}`, `Gâteau : ${descGateau()}`);
     if (demande.saveur) L.push(`Saveur : ${demande.saveur}`);
     if (demande.texte.trim()) L.push(`Prénom ou texte sur le gâteau : ${demande.texte.trim()}`);
+    if (demande.theme.trim() && demande.gateau !== 'wedding') L.push(`Thème ou personnage : ${demande.theme.trim()}`);
     if (demande.couleurs) L.push(`Couleurs : ${demande.couleurs}`);
     if (demande.idees.trim()) L.push(`Idées de décor : ${demande.idees.trim()}`);
     if (listeDouceurs()) L.push(`Douceurs : ${listeDouceurs()}`);

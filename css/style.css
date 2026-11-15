@@ -526,17 +526,15 @@ fieldset.groupe{border:0;padding:0;min-width:0}
   .saveur-detail p{font-size:15.5px}
 }
 
-/* ---------- 16. Retours de clientes (messages Instagram) : là où l'on hésite, sans allonger la page ---------- */
-.avis-court{margin:0;max-width:30rem}
-.avis-court ul{list-style:none;padding:0;display:grid;gap:10px}
-.avis-court li{font-size:16px;line-height:1.4;padding-left:14px;border-left:2px solid var(--or)}
-.avis-court figcaption,.avis-cmd figcaption{margin-top:10px;font-size:13.5px;color:var(--doux)}
-.avis-cmd{margin:0;max-width:26rem;padding-left:16px;border-left:2px solid var(--or)}
-.avis-cmd blockquote{margin:0;font-size:17px;line-height:1.45}
+/* ---------- 16. Retours de clientes, en fin de page dans le pied (les autres sont sur Instagram) ---------- */
+.pied .pied-avis{display:block;padding-bottom:40px;margin-bottom:40px;border-bottom:1px solid var(--ligne-sur-encre)}
+.pied .pied-avis h2{margin-bottom:18px}
+.pied-avis ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px clamp(24px,4vw,56px)}
+.pied-avis li{padding-left:16px;border-left:2px solid var(--or)}
+.pied-avis blockquote{margin:0}
+.pied-avis blockquote p{margin:0;max-width:none;color:var(--fond);font-size:17px;line-height:1.45}
+.pied .pied-avis-lien{margin-top:20px;font-size:14.5px}
+.pied-avis-lien a{color:var(--fond);text-decoration:underline;text-underline-offset:3px}
 @media (max-width:767px){
-  .avis-court{max-width:none}
-  .avis-court ul{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 0;scrollbar-width:none}
-  .avis-court ul::-webkit-scrollbar{display:none}
-  .avis-court li{flex:0 0 82%;scroll-snap-align:start;font-size:15px}
-  .avis-cmd blockquote{font-size:16px}
+  .pied-avis ul{grid-template-columns:1fr}
 }
