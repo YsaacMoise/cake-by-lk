@@ -299,7 +299,7 @@
   })();
 
   /* ---------- La demande ---------- */
-  const demande = { occasion: '', gateau: '', parts: '', partsPlus: 0, partsNumber: '', chiffre: '', invites: 0, saveur: '', texte: '', theme: '', couleurs: '', idees: '', sables: 0, cupcakes: 0, popcakes: 0, date: '', ville: '', nom: '', tel: '', allergies: '', mot: '', modele: '', modeleImg: '', modeleFete: '' };
+  const demande = { occasion: '', gateau: '', parts: '', partsPlus: 0, partsNumber: '', chiffre: '', invites: 0, saveur: '', texte: '', theme: '', themeAuto: '', modeleType: '', couleurs: '', idees: '', sables: 0, cupcakes: 0, popcakes: 0, date: '', ville: '', nom: '', tel: '', allergies: '', mot: '', modele: '', modeleImg: '', modeleFete: '' };
   const DEFAUTS = JSON.parse(JSON.stringify(demande));
   const NOMS = ['Fête', 'Gâteau', 'Saveur', 'Décor', 'Date', 'Vous'];
   const DOUCEURS = [['sables', 'Sablés', 'Un sablé', 'sablé'], ['cupcakes', 'Cupcakes', 'Un cupcake', 'cupcake'], ['popcakes', 'Popcakes', 'Un popcake', 'popcake']];
@@ -367,10 +367,13 @@
     demande.occasion = FETE_DEMANDE[b.closest('.tuile').dataset.f];
     demande.gateau = b.dataset.type;
     if (b.dataset.chiffre) demande.chiffre = b.dataset.chiffre;
-    demande.modele = b.dataset.titre; demande.modeleImg = b.dataset.vignette;
+    demande.modele = b.dataset.titre; demande.modeleImg = b.dataset.vignette; demande.modeleType = b.dataset.type;
     // un gâteau à thème va avec toutes les fêtes sauf le mariage : le modèle reste si la fête change
-    demande.modeleFete = b.closest('.tuile').dataset.f === 'theme' ? '*' : demande.occasion;
-    if (b.closest('.tuile').dataset.f === 'theme') demande.theme = b.querySelector('.tuile-nom').textContent;
+    const aTheme = b.closest('.tuile').dataset.f === 'theme';
+    demande.modeleFete = aTheme ? '*' : demande.occasion;
+    // le thème suit le modèle : un nouveau modèle remplace le thème rempli par l'ancien ; un thème écrit par la cliente reste
+    oublierThemeAuto();
+    if (aTheme) demande.theme = demande.themeAuto = b.querySelector('.tuile-nom').textContent;
     refFinale = '';
     allerA(1); versFormulaire();
   });
@@ -459,9 +462,9 @@
       ${champTheme()}
       ${couleursEtIdees()}
       <fieldset class="champ groupe"><legend class="legende">Douceurs en plus, 3 € pièce</legend><div class="douceurs">${DOUCEURS.map(([k, l, un]) => `<div class="douceur"><label for="f-${k}">${l}</label>${compteur(k, un, demande[k], 200)}</div>`).join('')}</div></fieldset></div>`; },
-    () => `<div class="etape"><h3 id="q-etape">Pour quand et où ?</h3><p class="aide">Comptez en général 4 à 5 jours avant la fête. Je vous dis si je suis disponible ce jour-là.</p>
+    () => `<div class="etape"><h3 id="q-etape">Pour quand ?</h3><p class="aide">Comptez en général 4 à 5 jours avant la fête. Je vous dis si je suis disponible ce jour-là.</p>
       <div class="champ"><label for="f-date">Date de la fête</label><input id="f-date" name="date" type="date" aria-describedby="e-date" min="${MIN_DATE}" value="${demande.date}" required><small class="erreur" id="e-date" role="alert" hidden></small></div>
-      <div class="champ"><label for="f-ville">Ville de la fête</label><input id="f-ville" name="ville" value="${esc(demande.ville)}" autocomplete="address-level2" aria-describedby="a-ville"><small id="a-ville">Retrait ou livraison, nous en parlons quand je vous réponds.</small></div></div>`,
+      <p class="aide">Le gâteau est à retirer, je ne fais pas de livraison. Je vous donne l’adresse en vous répondant.</p></div>`,
     () => `<div class="etape"><h3 id="q-etape">Et vous ?</h3>
       <div class="champ"><label for="f-nom">Votre prénom</label><input id="f-nom" name="nom" aria-describedby="e-nom" value="${esc(demande.nom)}" autocomplete="given-name" required><small class="erreur" id="e-nom" role="alert" hidden>Indiquez votre prénom.</small></div>
       <div class="champ"><label for="f-tel">Votre téléphone (facultatif)</label><input id="f-tel" name="tel" type="tel" value="${esc(demande.tel)}" autocomplete="tel"></div>
@@ -471,11 +474,16 @@
   ];
 
   /* Ce que la fête autorise : le gâteau, puis la saveur ; un modèle choisi dans le mur disparaît si la fête change */
+  // retire le thème rempli par un modèle, sauf si la cliente l'a modifié elle-même
+  function oublierThemeAuto() { if (demande.themeAuto && demande.theme.trim() === demande.themeAuto) demande.theme = ''; demande.themeAuto = ''; }
+  function oublierModele() { demande.modele = ''; demande.modeleImg = ''; demande.modeleFete = ''; demande.modeleType = ''; oublierThemeAuto(); }
   function accorder() {
     const g = gateauxPour(demande.occasion);
     if (!g.includes(demande.gateau)) demande.gateau = g.length === 1 ? g[0] : '';
     if (demande.saveur && !saveursPour(demande.gateau).some(s => s.nom === demande.saveur)) demande.saveur = '';
-    if (demande.modele && (demande.modeleFete === '*' ? demande.occasion === 'Mariage' : demande.modeleFete !== demande.occasion)) { demande.modele = ''; demande.modeleImg = ''; demande.modeleFete = ''; }
+    // le modèle ne tient plus si la fête ou le type de gâteau ne lui correspondent plus
+    if (demande.modele && ((demande.modeleFete === '*' ? demande.occasion === 'Mariage' : demande.modeleFete !== demande.occasion)
+      || (demande.modeleType && demande.gateau && demande.gateau !== demande.modeleType))) oublierModele();
   }
   function allerA(i) {
     etape = Math.max(0, Math.min(i, 6));
@@ -575,7 +583,7 @@
   const montrerHaut = () => { const top = formulaire.getBoundingClientRect().top; if (top < 0 || top > innerHeight * 0.25) defiler(formulaire); };
   btnSuivant.addEventListener('click', () => { if (valider()) { allerA(etape + 1); if (etape < 6) focusTitre(); montrerHaut(); } });
   btnRetour.addEventListener('click', () => { allerA(etape - 1); focusTitre(); montrerHaut(); });
-  $('#retirerModele').addEventListener('click', () => { demande.modele = ''; demande.modeleImg = ''; demande.modeleFete = ''; majRecap(); focusTitre(); });
+  $('#retirerModele').addEventListener('click', () => { oublierModele(); majRecap(); focusTitre(); });
 
   /* ---------- Prix : toujours ceux de la carte, « à partir de » ---------- */
   function prix() {
@@ -609,7 +617,7 @@
     const prenom = demande.texte.trim();
     const r = $('#rPrenom');
     r.textContent = prenom || 'Votre gâteau'; r.classList.toggle('vide', !prenom); ajuster(r);
-    const lignes = [['Modèle', demande.modele], ['Fête', demande.occasion], ['Gâteau', descGateau()], ['Thème', avecTheme() ? demande.theme.trim() : ''], ['Saveur', demande.saveur], ['Couleurs', demande.gateau === 'number' ? '' : demande.couleurs], ['Douceurs', listeDouceurs()], ['Date', dateLongue()], ['Lieu de la fête', demande.ville]].filter(l => l[1]);
+    const lignes = [['Modèle', demande.modele], ['Fête', demande.occasion], ['Gâteau', descGateau()], ['Thème', avecTheme() ? demande.theme.trim() : ''], ['Saveur', demande.saveur], ['Couleurs', demande.gateau === 'number' ? '' : demande.couleurs], ['Douceurs', listeDouceurs()], ['Date', dateLongue()]].filter(l => l[1]);
     $('#rListe').innerHTML = lignes.map(([a, b]) => `<dt>${a}</dt><dd>${esc(b)}</dd>`).join('');
     const t = textePrix();
     $('#rTotal').innerHTML = `${t.apartir ? '<small>à partir de</small>' : ''}${t.grand ? `<b>${t.grand}</b>` : ''}<small>${t.note}</small>`;
@@ -636,7 +644,6 @@
     if (demande.idees.trim()) L.push(`Idées de décor : ${demande.idees.trim()}`);
     if (listeDouceurs()) L.push(`Douceurs : ${listeDouceurs()}`);
     L.push(`Date de la fête : ${dateLongue()}`);
-    if (demande.ville.trim()) L.push(`Lieu de la fête : ${demande.ville.trim()}`);
     if (demande.allergies.trim()) L.push(`Allergies ou régime : ${demande.allergies.trim()}`);
     if (t.apartir) L.push(`Prix de départ indiqué sur le site : à partir de ${t.grand}`);
     else if (t.grand) L.push(`Prix : ${t.note}`);
