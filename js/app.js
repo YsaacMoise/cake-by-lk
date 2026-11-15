@@ -429,15 +429,17 @@
   const decorPour = () => demande.gateau === 'wedding'
     ? { aide: 'Les prénoms ou les initiales sont écrits en lettres dorées. Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénoms, initiales ou texte sur le gâteau', exemple: 'Vos prénoms, vos initiales, la date', vide: 'Vos prénoms' }
     : demande.gateau === 'number'
-      ? { aide: 'Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénom ou texte à écrire', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom' }
+      ? { aide: 'Je garnis le chiffre comme vous l’avez choisi, et je peux y poser une petite plaque avec un prénom. Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Un prénom sur une petite plaque (facultatif)', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom', ligne: 'Prénom sur la plaque' }
       : { aide: 'Le prénom est écrit en lettres dorées, ou dans les couleurs du thème. Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénom ou texte sur le gâteau', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom' };
-  /* Un thème ou un personnage : pour tous les gâteaux sauf le wedding cake */
-  const champTheme = () => demande.gateau === 'wedding' ? '' : `<div class="champ"><label for="f-theme">Un thème ou un personnage ? (facultatif)</label><input id="f-theme" name="theme" maxlength="60" value="${esc(demande.theme)}" placeholder="Stitch, la jungle, le PSG, une licorne…"></div>`;
+  /* Un thème ou un personnage : seulement pour le layer cake (le number cake, c'est le chiffre et sa garniture ; le wedding cake n'en a pas) */
+  const avecTheme = () => demande.gateau === 'layer';
+  const champTheme = () => !avecTheme() ? '' : `<div class="champ"><label for="f-theme">Un thème ou un personnage ? (facultatif)</label><input id="f-theme" name="theme" maxlength="60" value="${esc(demande.theme)}" placeholder="Stitch, la jungle, le PSG, une licorne…"></div>`;
   function couleursEtIdees() {
-    return `<fieldset class="champ groupe"><legend class="legende">Couleurs</legend><div class="pastilles">
+    const number = demande.gateau === 'number';
+    return `${number ? '' : `<fieldset class="champ groupe"><legend class="legende">Couleurs</legend><div class="pastilles">
       ${[['Blanc et or', '#FFFFFF', '#B08532'], ['Rose poudré', '#F3CBD1'], ['Rouge et rose', '#C8435F'], ['Pastel', '#CFE6D8'], ['Couleurs vives', '#F2A33A'], ['Conseillez-moi', '#E8DDD0']].map(([l, a, b]) => `<label${demande.couleurs === l ? ' class="choisi"' : ''}><input type="radio" name="couleurs" value="${l}"${demande.couleurs === l ? ' checked' : ''}><i style="background:${b ? `linear-gradient(90deg,${a} 50%,${b} 50%)` : a}"></i>${l}</label>`).join('')}
-      </div></fieldset>
-      <div class="champ"><label for="f-idees">Vos idées de décor</label><textarea id="f-idees" name="idees" rows="3" placeholder="Fleurs fraîches, couleur précise, accessoires…">${esc(demande.idees)}</textarea></div>`;
+      </div></fieldset>`}
+      <div class="champ"><label for="f-idees">Vos idées de décor</label><textarea id="f-idees" name="idees" rows="3" placeholder="${number ? 'Fleurs, macarons, chocolats…' : 'Fleurs fraîches, couleur précise, accessoires…'}">${esc(demande.idees)}</textarea></div>`;
   }
   const VUES = [
     () => `<div class="etape"><h3 id="q-etape">Que fêtez-vous ?</h3>${groupe('occasion', FETES.map(f => ({ v: f, l: f })), demande.occasion, 'deux')}</div>`,
@@ -607,7 +609,7 @@
     const prenom = demande.texte.trim();
     const r = $('#rPrenom');
     r.textContent = prenom || 'Votre gâteau'; r.classList.toggle('vide', !prenom); ajuster(r);
-    const lignes = [['Modèle', demande.modele], ['Fête', demande.occasion], ['Gâteau', descGateau()], ['Thème', demande.gateau === 'wedding' ? '' : demande.theme.trim()], ['Saveur', demande.saveur], ['Couleurs', demande.couleurs], ['Douceurs', listeDouceurs()], ['Date', dateLongue()], ['Lieu de la fête', demande.ville]].filter(l => l[1]);
+    const lignes = [['Modèle', demande.modele], ['Fête', demande.occasion], ['Gâteau', descGateau()], ['Thème', avecTheme() ? demande.theme.trim() : ''], ['Saveur', demande.saveur], ['Couleurs', demande.gateau === 'number' ? '' : demande.couleurs], ['Douceurs', listeDouceurs()], ['Date', dateLongue()], ['Lieu de la fête', demande.ville]].filter(l => l[1]);
     $('#rListe').innerHTML = lignes.map(([a, b]) => `<dt>${a}</dt><dd>${esc(b)}</dd>`).join('');
     const t = textePrix();
     $('#rTotal').innerHTML = `${t.apartir ? '<small>à partir de</small>' : ''}${t.grand ? `<b>${t.grand}</b>` : ''}<small>${t.note}</small>`;
@@ -628,9 +630,9 @@
     if (demande.modele) L.push(`Modèle vu sur le site : ${demande.modele}`);
     L.push(`Fête : ${demande.occasion}`, `Gâteau : ${descGateau()}`);
     if (demande.saveur) L.push(`Saveur : ${demande.saveur}`);
-    if (demande.texte.trim()) L.push(`Prénom ou texte sur le gâteau : ${demande.texte.trim()}`);
-    if (demande.theme.trim() && demande.gateau !== 'wedding') L.push(`Thème ou personnage : ${demande.theme.trim()}`);
-    if (demande.couleurs) L.push(`Couleurs : ${demande.couleurs}`);
+    if (demande.texte.trim()) L.push(`${decorPour().ligne || 'Prénom ou texte sur le gâteau'} : ${demande.texte.trim()}`);
+    if (demande.theme.trim() && avecTheme()) L.push(`Thème ou personnage : ${demande.theme.trim()}`);
+    if (demande.couleurs && demande.gateau !== 'number') L.push(`Couleurs : ${demande.couleurs}`);
     if (demande.idees.trim()) L.push(`Idées de décor : ${demande.idees.trim()}`);
     if (listeDouceurs()) L.push(`Douceurs : ${listeDouceurs()}`);
     L.push(`Date de la fête : ${dateLongue()}`);
