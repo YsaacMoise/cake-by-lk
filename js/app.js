@@ -102,7 +102,9 @@
     const GROUPES = [
       { titre: 'Anniversaires et fêtes', texte: 'Layer cakes dès 75 €, number cakes dès 30 €.', f: ['anniversaire', 'baby', 'tahara'], vedette: (t) => t.classList.contains('place'), ordre: ['anniv-ahlem', 'anniv-oceane', 'number-18', 'baby-shower', 'anniv-fruits-rouges', 'anniv-brina', 'anniv-chocolats', 'number-50', 'number-40', 'tahara'] },
       { titre: 'Gâteaux à thème', texte: 'Le personnage, le club ou l’univers que vous voulez. Layer cakes dès 75 €.', f: ['theme'], vedette: (t) => t.querySelector('[data-vignette*="theme-stitch"]'), ordre: ['theme-spiderman', 'theme-minnie', 'theme-pat-patrouille', 'theme-licorne', 'theme-roi-lion', 'theme-psg', 'theme-vaiana', 'theme-sirene', 'theme-barbie', 'theme-panda', 'theme-jungle'] },
-      { titre: 'Mariages', texte: 'Wedding cakes et pièces montées, sur devis, dès 5 € la part.', f: ['mariage'], vedette: (t) => t.querySelector('[data-vignette*="mariage-agrumes"]'), ordre: ['mariage-suspendu', 'mariage-nassim-cassandra', 'mariage-sabrina-ilies', 'mariage-sb', 'mariage-roses', 'mariage-cd'] },
+      { titre: 'Mariages', texte: 'Wedding cakes et pièces montées, sur devis, dès 5 € la part.', f: ['mariage'], vedette: (t) => t.querySelector('[data-vignette*="mariage-agrumes"]'), ordre: ['mariage-suspendu', 'mariage-nassim-cassandra', 'mariage-sb', 'mariage-roses', 'mariage-da'],
+        // six photos : la carte de devis complète la grille (elle se cache seule sur tablette, où six photos font des rangées pleines)
+        fin: `<li class="tuile-devis"><div><p class="tuile-devis-titre">Votre wedding cake</p><p>Sur devis, selon le nombre d’invités.</p><button class="btn" type="button" data-composer="wedding">Demander un devis</button></div></li>` },
     ];
     const bloc = document.createElement('div'); bloc.className = 'occasions'; bloc.id = 'mur';
     GROUPES.forEach((g, i) => {
@@ -112,6 +114,7 @@
       const sec = document.createElement('section'); sec.className = 'occasion'; sec.setAttribute('aria-labelledby', 'occ-' + i);
       sec.innerHTML = `<div class="occasion-tete"><h3 id="occ-${i}">${g.titre}</h3><p>${g.texte}</p></div><ul class="occasion-grille"></ul><button class="btn btn-clair voir-plus" type="button" aria-expanded="false">Voir les autres gâteaux</button>`;
       liste.forEach((t) => $('.occasion-grille', sec).appendChild(t));
+      if (g.fin) $('.occasion-grille', sec).insertAdjacentHTML('beforeend', g.fin);
       $('.voir-plus', sec).addEventListener('click', (e) => { sec.dataset.ouvert = 'oui'; sec.classList.add('ouverte'); e.currentTarget.hidden = true; });
       bloc.appendChild(sec);
     });

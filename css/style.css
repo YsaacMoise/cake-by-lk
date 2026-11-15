@@ -460,6 +460,11 @@ fieldset.groupe{border:0;padding:0;min-width:0}
 .occasion-grille .vedette .tuile-nom{font-size:17px}
 .occasion:not(.ouverte) .occasion-grille > li:nth-child(n+8){display:none}
 .voir-plus{margin-top:24px}
+.tuile-devis{display:flex}
+.tuile-devis > div{width:100%;aspect-ratio:3/4;border-radius:18px;background:var(--surface);padding:clamp(16px,1.6vw,24px);display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:8px}
+.tuile-devis-titre{font-size:19px;font-weight:600;line-height:1.2;letter-spacing:-.01em}
+.tuile-devis p:not(.tuile-devis-titre){font-size:14.5px;line-height:1.35;color:var(--doux)}
+.tuile-devis .btn{margin-top:6px;min-height:44px;padding-inline:16px;font-size:14.5px}
 
 /* Ma carte : un petit accueil (photo en arche comme l'accueil du site), des onglets par gâteau, des saveurs à cliquer */
 .carte-scene{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,6vw,96px);align-items:center}
