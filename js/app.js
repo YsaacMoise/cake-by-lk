@@ -101,7 +101,7 @@
     const ancien = $('#mur'), tuiles = $$('.tuile', ancien);
     const GROUPES = [
       { titre: 'Anniversaires et fêtes', texte: 'Layer cakes dès 75 €, number cakes dès 30 €.', f: ['anniversaire', 'baby'], vedette: (t) => t.classList.contains('place') },
-      { titre: 'Mariages', texte: 'Wedding cakes sur devis, dès 5 € la part.', f: ['mariage'], vedette: (t) => t.querySelector('[data-vignette*="mariage-agrumes"]') },
+      { titre: 'Mariages', texte: 'Wedding cakes et pièces montées, sur devis, dès 5 € la part.', f: ['mariage'], vedette: (t) => t.querySelector('[data-vignette*="mariage-agrumes"]') },
     ];
     const bloc = document.createElement('div'); bloc.className = 'occasions'; bloc.id = 'mur';
     GROUPES.forEach((g, i) => {
@@ -443,7 +443,7 @@
       <div class="champ"><label for="f-texte">${d.label}</label><input id="f-texte" name="texte" maxlength="40" value="${esc(demande.texte)}" placeholder="${d.exemple}"><p class="apercu-decor" id="apercuDecor" aria-hidden="true">${esc(demande.texte) || d.vide}</p></div>
       ${couleursEtIdees()}
       <fieldset class="champ groupe"><legend class="legende">Douceurs en plus, 3 € pièce</legend><div class="douceurs">${DOUCEURS.map(([k, l, un]) => `<div class="douceur"><label for="f-${k}">${l}</label>${compteur(k, un, demande[k], 200)}</div>`).join('')}</div></fieldset></div>`; },
-    () => `<div class="etape"><h3 id="q-etape">Pour quand et où ?</h3><p class="aide">Je vous dis si je suis disponible ce jour-là.</p>
+    () => `<div class="etape"><h3 id="q-etape">Pour quand et où ?</h3><p class="aide">Comptez en général 4 à 5 jours avant la fête. Je vous dis si je suis disponible ce jour-là.</p>
       <div class="champ"><label for="f-date">Date de la fête</label><input id="f-date" name="date" type="date" aria-describedby="e-date" min="${MIN_DATE}" value="${demande.date}" required><small class="erreur" id="e-date" role="alert" hidden></small></div>
       <div class="champ"><label for="f-ville">Ville de la fête</label><input id="f-ville" name="ville" value="${esc(demande.ville)}" autocomplete="address-level2" aria-describedby="a-ville"><small id="a-ville">Retrait ou livraison, nous en parlons quand je vous réponds.</small></div></div>`,
     () => `<div class="etape"><h3 id="q-etape">Et vous ?</h3>
