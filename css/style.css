@@ -418,3 +418,110 @@ fieldset.groupe{border:0;padding:0;min-width:0}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.15s!important;transition-property:opacity,background-color,border-color,color!important}
 }
+
+/* ---------- 15. Refonte du 15/11/2026 : accueil de marque, couleurs, mur légendé, carte à onglets ----------
+   Rôles des couleurs : crème et beige pour les fonds ; brun pour le texte et tous les boutons ;
+   doré réservé à la signature (monogramme, mots calligraphiés) ; rose en petite touche seulement (sélection de texte). */
+
+/* Accueil : la marque d'abord, le lieu en dessous en caractères fins */
+.titre-marque{display:flex;flex-direction:column;align-items:flex-start;font-size:inherit;line-height:1;letter-spacing:0}
+.titre-marque .monogramme{display:block;width:clamp(78px,7.4vw,112px);height:auto;color:var(--or);margin-bottom:clamp(16px,1.8vw,26px)}
+.marque-nom{font-size:clamp(52px,6vw,92px);font-weight:700;line-height:.95;letter-spacing:-.04em}
+.marque-lieu{margin-top:clamp(10px,1vw,16px);font-size:clamp(20px,1.8vw,27px);font-weight:300;line-height:1.2;letter-spacing:.005em;color:var(--doux)}
+.accueil-plus{display:flex;flex-wrap:wrap;align-items:center;gap:4px 22px;font-size:15.5px;color:var(--doux)}
+.accueil-plus b{color:var(--encre);font-weight:600}
+.accueil-plus a{display:inline-flex;align-items:center;gap:7px;min-height:44px;color:var(--encre);font-weight:500;text-decoration:underline;text-decoration-color:var(--bord-champ);text-underline-offset:5px}
+.accueil-plus a:hover{text-decoration-color:var(--encre)}
+.accueil-plus svg{width:18px;height:18px;flex:none}
+/* le texte de l'accueil défile normalement (--decal posé par le script) : seul le gâteau reste à l'écran et tourne */
+.scene-on .accueil-texte > *{translate:0 calc(var(--decal,0) * -1px)}
+
+/* Ma carte sur le beige des fonds, plus d'aplat rose */
+.carte{background:var(--surface);--sur-rose:var(--doux);--pointilles:var(--bord-champ);--trait-rose:var(--bord)}
+.carte ::selection{background:var(--rose);color:var(--encre)}
+
+/* Le mur : photos recadrées selon une même règle, légende toujours visible sous la photo */
+.mur{gap:26px 12px}
+.tuile button{display:flex;flex-direction:column;align-items:stretch;height:100%;aspect-ratio:auto;background:none;overflow:visible;text-align:left}
+.tuile-photo{position:relative;display:block;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:var(--surface)}
+.tuile-nom{position:static;opacity:1;transform:none;background:none;border-radius:0;padding:10px 2px 0;font-size:15px;line-height:1.25;transition:none}
+.tuile-prix{display:block;padding:3px 2px 0;font-size:13.5px;line-height:1.3;color:var(--doux)}
+@media (hover:hover){.tuile button:hover .tuile-nom{text-decoration:underline;text-decoration-color:var(--bord-champ);text-underline-offset:4px}}
+
+/* Mur rangé par occasion (classe mur-occasion sur html ; sans JavaScript, la grille simple reste) : deux groupes, un gâteau en vedette, le reste à la demande */
+.mur-occasion .filtres{display:none}
+.occasions{display:grid;gap:clamp(48px,6vw,80px)}
+.occasion-tete{display:flex;align-items:baseline;justify-content:space-between;gap:6px 24px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--bord)}
+.occasion-tete h3{font-size:clamp(26px,2.4vw,34px)}
+.occasion-tete p{color:var(--doux);font-size:16px}
+.occasion-grille{list-style:none;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:26px 12px}
+.occasion-grille .vedette{grid-column:span 2;grid-row:span 2}
+.occasion-grille .vedette .tuile-photo{flex:1;aspect-ratio:auto;min-height:0}
+.occasion-grille .vedette .tuile-nom{font-size:17px}
+.occasion:not(.ouverte) .occasion-grille > li:nth-child(n+8){display:none}
+.voir-plus{margin-top:24px}
+
+/* Ma carte : un petit accueil (photo en arche comme l'accueil du site), des onglets par gâteau, des saveurs à cliquer */
+.carte-scene{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,6vw,96px);align-items:center}
+.carte-texte{display:flex;flex-direction:column;align-items:flex-start;gap:22px}
+.carte-texte .chapo{margin-top:0}
+.carte-onglets{display:flex;gap:8px;flex-wrap:wrap}
+.carte-onglets button{min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--bord-champ);background:var(--fond);font:600 15.5px var(--c);color:var(--encre);cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.carte-onglets button[aria-selected="true"]{background:var(--encre);border-color:var(--encre);color:var(--fond)}
+.carte-panneau{align-self:stretch;max-width:520px}
+.carte-panneau .btn{margin-top:18px}
+.douceurs{align-self:stretch;max-width:520px;padding-top:18px;border-top:1px solid var(--bord);font-size:15.5px;color:var(--doux)}
+.douceurs b{color:var(--encre);font-weight:600}
+.carte-photo{margin:0;justify-self:center;width:min(100%,440px);aspect-ratio:3/4;border-radius:999px 999px 28px 28px;overflow:hidden;background:var(--fond);box-shadow:0 40px 80px -50px var(--ombre)}
+.carte-photo img{width:100%;height:100%;object-fit:cover;transition:opacity .2s}
+.carte-photo img.change{opacity:0}
+.saveurs-choix{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(24px,4vw,64px);align-items:center}
+.saveurs-liste{display:flex;flex-direction:column;gap:4px}
+.saveurs-liste button{display:flex;align-items:center;gap:14px;min-height:60px;padding:8px 16px 8px 8px;border:0;border-radius:16px;background:none;font:600 18px var(--c);color:var(--encre);text-align:left;cursor:pointer;transition:background .2s}
+.saveurs-liste button:hover{background:color-mix(in srgb,var(--fond) 55%,transparent)}
+.saveurs-liste button[aria-selected="true"]{background:var(--fond)}
+.saveurs-liste img{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:none}
+.saveur-detail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:center;background:var(--fond);border-radius:28px;padding:20px}
+.saveur-detail img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:18px}
+.saveur-detail h4{font-size:26px}
+.saveur-detail p{margin-top:8px;color:var(--doux);font-size:16.5px;line-height:1.5}
+
+@media (max-width:999px){
+  .occasion-grille{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .occasion:not(.ouverte) .occasion-grille > li:nth-child(n+7){display:none}
+}
+@media (min-width:768px) and (max-width:1024px) and (orientation:portrait){
+  .accueil-plus{order:4}
+  .niche,.scene-on .niche{order:5}
+}
+@media (max-width:767px){
+  .titre-marque .monogramme{width:60px;margin-bottom:12px}
+  .marque-nom{font-size:46px}
+  .marque-lieu{font-size:18px;margin-top:8px}
+  .accueil-plus{order:4;font-size:15px;gap:0 18px}
+  .niche{order:5}
+  .mur{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px}
+  .tuile-photo{border-radius:12px}
+  .occasion-grille{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 10px}
+  .occasion-grille .vedette{grid-row:auto}
+  .occasion-grille .vedette .tuile-photo{flex:none;aspect-ratio:3/4}
+  .occasion:not(.ouverte) .occasion-grille > li:nth-child(n+7){display:revert}
+  .occasion:not(.ouverte) .occasion-grille > li:nth-child(n+8){display:none}
+  .carte-scene{display:flex;flex-direction:column;align-items:stretch;gap:20px}
+  .carte-texte{display:contents}
+  #t-carte{order:1}
+  .carte .chapo{order:2}
+  .carte-onglets{order:3;gap:6px}
+  .carte-onglets button{padding:0 14px;font-size:14.5px}
+  .carte-photo{order:4;align-self:center;width:min(76%,320px)}
+  .carte-panneau{order:5}
+  .douceurs{order:6}
+  .saveurs-choix{grid-template-columns:minmax(0,1fr);gap:16px}
+  .saveurs-liste{flex-direction:row;flex-wrap:wrap;gap:8px}
+  .saveurs-liste button{min-height:44px;gap:8px;padding:4px 14px 4px 4px;border:1.5px solid var(--bord-champ);border-radius:999px;font-size:15px;background:var(--fond)}
+  .saveurs-liste img{width:34px;height:34px}
+  .saveurs-liste button[aria-selected="true"]{background:var(--encre);border-color:var(--encre);color:var(--fond)}
+  .saveur-detail{grid-template-columns:116px minmax(0,1fr);gap:16px;padding:14px;border-radius:22px}
+  .saveur-detail h4{font-size:20px}
+  .saveur-detail p{font-size:15.5px}
+}
