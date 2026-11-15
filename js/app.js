@@ -165,12 +165,12 @@
         rayonTuile = parseFloat(getComputedStyle($('.tuile-photo', place) || place.firstElementChild).borderTopLeftRadius) || 18;
         rayonBas = innerWidth < 768 ? 28 : 36;
         boite.classList.add('pret');
-        indice.textContent = 'Défilez, je tourne';
+        indice.textContent = 'Faites défiler pour le voir tourner';
       } else {
         if (boite.parentElement !== niche) niche.appendChild(boite);
         boite.removeAttribute('style'); boite.classList.remove('pret', 'range'); place.classList.remove('visible'); blocsTete.forEach((b) => { b.style.opacity = ''; });
         racine.classList.remove('recit-actif');
-        indice.textContent = 'Glissez, je tourne';
+        indice.textContent = 'Glissez pour le faire tourner';
       }
     }
     installer();
@@ -181,10 +181,10 @@
     /* Le récit du tour : une phrase par tiers de tour, tirée de la fiche du gâteau et de la carte ; les trois traits se remplissent */
     const recit = $('#recit'), recitTexte = $('#recitTexte'), traits = recit ? $$('.recit-barre i', recit) : [];
     const RECIT = [
-      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16M6 14l6 6 6-6"/></svg>Défilez, je tourne`,
-      'Layer cake, géodes roses et prénom doré',
-      '15, 20 ou 25 parts',
-      'Votre prénom, écrit en lettres d’or',
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16M6 14l6 6 6-6"/></svg>Faites défiler pour le voir tourner`,
+      'Un layer cake aux géodes roses',
+      'De 15 à 25 parts',
+      'Votre prénom en lettres d’or',
     ];
     const BORNES = [0.04, 0.4, 0.75, 1];
     let etapeRecit = -1, opaRecit = '', remplis = '';
@@ -286,7 +286,7 @@
   /* ---------- La demande ---------- */
   const demande = { occasion: '', gateau: '', parts: '', partsPlus: 0, partsNumber: '', chiffre: '', invites: 0, saveur: '', texte: '', couleurs: '', idees: '', sables: 0, cupcakes: 0, popcakes: 0, date: '', ville: '', nom: '', tel: '', allergies: '', mot: '', modele: '', modeleImg: '', modeleFete: '' };
   const DEFAUTS = JSON.parse(JSON.stringify(demande));
-  const NOMS = ['Fête', 'Gâteau', 'Saveur', 'Décor', 'Date', 'Coordonnées'];
+  const NOMS = ['Fête', 'Gâteau', 'Saveur', 'Décor', 'Date', 'Vous'];
   const DOUCEURS = [['sables', 'Sablés', 'Un sablé', 'sablé'], ['cupcakes', 'Cupcakes', 'Un cupcake', 'cupcake'], ['popcakes', 'Popcakes', 'Un popcake', 'popcake']];
   const nbDouceurs = () => demande.sables + demande.cupcakes + demande.popcakes;
   const formulaire = $('#formulaire'), zone = $('#etapes'), progression = $('#progression'), navEtapes = $('#navEtapes');
@@ -305,12 +305,11 @@
   /* Un filtre : le chapô compte les gâteaux montrés, et une case dit ce que je fais pour cette fête, avec un bouton qui ouvre
      le formulaire la fête déjà choisie (utile surtout pour le baby shower, qui n'a encore qu'une photo) */
   const chapoCreations = $('#chapoCreations'), chapoTous = chapoCreations.textContent;
-  const NOMBRES = ['', 'Un', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six', 'Sept', 'Huit', 'Neuf', 'Dix', 'Onze', 'Douze', 'Treize', 'Quatorze', 'Quinze', 'Seize', 'Dix-sept', 'Dix-huit', 'Dix-neuf', 'Vingt'];
-  const SUITE = ' Choisissez celui qui vous plaît : je l’adapte à votre fête.';
+  const SUITE = ' Un modèle vous plaît ? Je l’adapte à votre fête.';
   const CHAPO = {
-    anniversaire: (n) => `${NOMBRES[n] || n} gâteaux d’anniversaire que j’ai faits.${SUITE}`,
-    mariage: (n) => `${NOMBRES[n] || n} wedding cakes que j’ai faits.${SUITE}`,
-    baby: (n) => n === 1 ? 'Un gâteau de baby shower que j’ai fait : je l’adapte à votre fête.' : `${NOMBRES[n] || n} gâteaux de baby shower que j’ai faits.${SUITE}`,
+    anniversaire: () => `Mes gâteaux d’anniversaire.${SUITE}`,
+    mariage: () => `Mes wedding cakes.${SUITE}`,
+    baby: () => `Mes gâteaux de baby shower.${SUITE}`,
   };
   const NOTE = {
     anniversaire: 'Pour un anniversaire, je fais un layer cake ou un number cake.',
@@ -399,14 +398,14 @@
   const compteur = (k, un, val, max = 400) => `<div class="qte"><button type="button" data-qte="${k}" data-pas="-1" aria-label="${un} de moins">${moins}</button><input id="f-${k}" name="${k}" type="number" inputmode="numeric" min="0" max="${max}" step="1" value="${val}"><button type="button" data-qte="${k}" data-pas="1" aria-label="${un} de plus">${plus}</button></div>`;
   const aujourdhui = new Date(); aujourdhui.setMinutes(aujourdhui.getMinutes() - aujourdhui.getTimezoneOffset());
   const MIN_DATE = aujourdhui.toISOString().slice(0, 10);
-  const noteMariage = () => demande.invites ? `<b>${pluriel(demande.invites, 'invité', 'invités')}, ${pluriel(demande.invites, 'part', 'parts')}.</b> Je vous propose la pièce et le prix exact dans ma réponse.` : 'Une part par invité, à partir de 5 € la part.';
+  const noteMariage = () => demande.invites ? `<b>${pluriel(demande.invites, 'invité', 'invités')}, ${pluriel(demande.invites, 'part', 'parts')}.</b> Je vous réponds avec une proposition et le prix exact.` : 'Une part par invité, à partir de 5 € la part.';
 
   function tailles() {
     const g = demande.gateau;
     if (g === 'layer') return `<fieldset class="champ groupe"><legend class="legende" id="q-parts">Combien de parts ?</legend>
-      ${groupe('parts', [15, 20, 25].map(t => ({ v: t, l: `${t} parts`, d: euros(LAYER[t]) })).concat([{ v: 'plus', l: 'Plus de 25 parts', s: 'Prix dans ma réponse' }]), demande.parts, '', 'q-parts')}
+      ${groupe('parts', [15, 20, 25].map(t => ({ v: t, l: `${t} parts`, d: euros(LAYER[t]) })).concat([{ v: 'plus', l: 'Plus de 25 parts', s: 'Je vous donne le prix' }]), demande.parts, '', 'q-parts')}
       <small class="erreur" id="e-parts" role="alert" hidden>Choisissez le nombre de parts.</small></fieldset>
-      <div class="champ" id="champPlus"${demande.parts === 'plus' ? '' : ' hidden'}><label for="f-partsPlus">Combien de parts vous faut-il ?</label>${compteur('partsPlus', 'Une part', demande.partsPlus || '')}<small>Ma carte s’arrête à 25 parts : je vous dis ce qui est possible dans ma réponse.</small><small class="erreur" id="e-plus" role="alert" hidden>Indiquez le nombre de parts, à partir de 26.</small></div>`;
+      <div class="champ" id="champPlus"${demande.parts === 'plus' ? '' : ' hidden'}><label for="f-partsPlus">Combien de parts vous faut-il ?</label>${compteur('partsPlus', 'Une part', demande.partsPlus || '')}<small>Au-delà de 25 parts, je vous dis ce que je peux faire.</small><small class="erreur" id="e-plus" role="alert" hidden>Indiquez le nombre de parts, à partir de 26.</small></div>`;
     if (g === 'number') return `<fieldset class="champ groupe"><legend class="legende" id="q-parts">Combien de parts ?</legend>
       ${groupe('partsNumber', Object.keys(NUMBER).map(t => ({ v: t, l: `${t} parts`, d: euros(NUMBER[t]) })), demande.partsNumber, '', 'q-parts')}
       <small class="erreur" id="e-parts" role="alert" hidden>Choisissez le nombre de parts.</small></fieldset>
@@ -417,10 +416,10 @@
   }
   /* Le texte écrit sur le gâteau : libellé, exemple et aperçu selon le gâteau */
   const decorPour = () => demande.gateau === 'wedding'
-    ? { aide: 'Les prénoms ou les initiales s’écrivent en lettres dorées. Vous pourrez m’envoyer une photo modèle sur Instagram.', label: 'Prénoms, initiales ou texte sur le gâteau', exemple: 'Vos prénoms, vos initiales, la date', vide: 'Vos prénoms' }
+    ? { aide: 'Les prénoms ou les initiales sont écrits en lettres dorées. Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénoms, initiales ou texte sur le gâteau', exemple: 'Vos prénoms, vos initiales, la date', vide: 'Vos prénoms' }
     : demande.gateau === 'number'
-      ? { aide: 'Vous pourrez m’envoyer une photo modèle sur Instagram.', label: 'Prénom ou texte à écrire', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom' }
-      : { aide: 'Le prénom s’écrit en lettres dorées. Vous pourrez m’envoyer une photo modèle sur Instagram.', label: 'Prénom ou texte sur le gâteau', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom' };
+      ? { aide: 'Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénom ou texte à écrire', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom' }
+      : { aide: 'Le prénom est écrit en lettres dorées. Si vous avez une photo modèle, envoyez-la-moi avec le message.', label: 'Prénom ou texte sur le gâteau', exemple: 'Le prénom de la personne fêtée', vide: 'Votre prénom' };
   function couleursEtIdees() {
     return `<fieldset class="champ groupe"><legend class="legende">Couleurs</legend><div class="pastilles">
       ${[['Blanc et or', '#FFFFFF', '#B08532'], ['Rose poudré', '#F3CBD1'], ['Rouge et rose', '#C8435F'], ['Pastel', '#CFE6D8'], ['Couleurs vives', '#F2A33A'], ['Conseillez-moi', '#E8DDD0']].map(([l, a, b]) => `<label${demande.couleurs === l ? ' class="choisi"' : ''}><input type="radio" name="couleurs" value="${l}"${demande.couleurs === l ? ' checked' : ''}><i style="background:${b ? `linear-gradient(90deg,${a} 50%,${b} 50%)` : a}"></i>${l}</label>`).join('')}
@@ -431,28 +430,28 @@
     () => `<div class="etape"><h3 id="q-etape">Que fêtez-vous ?</h3>${groupe('occasion', FETES.map(f => ({ v: f, l: f })), demande.occasion, 'deux')}</div>`,
     () => {
       const g = gateauxPour(demande.occasion);
-      if (g.length > 1) return `<div class="etape"><h3 id="q-etape">Quel gâteau ?</h3><p class="aide">Pour un anniversaire, je fais l’un ou l’autre.</p>
+      if (g.length > 1) return `<div class="etape"><h3 id="q-etape">Quel gâteau ?</h3><p class="aide">Pour un anniversaire, vous avez le choix.</p>
         ${groupe('gateau', [
           { v: 'layer', cls: 'type', l: 'Layer cake', s: '15, 20 ou 25 parts, à partir de 75 €', img: 'img/hero/anniv-oceane-450.webp', iw: 450, ih: 562 },
           { v: 'number', cls: 'type', l: 'Number cake', s: '6 ou 8 à 10 parts, à partir de 30 €', img: 'img/hero/number-18-450.webp', iw: 450, ih: 562 },
         ], demande.gateau, 'types')}<div id="tailles">${tailles()}</div></div>`;
-      if (g[0] === 'wedding') return `<div class="etape"><h3 id="q-etape">Votre wedding cake</h3><p class="aide">Pour un mariage, je fais un wedding cake, sur devis.</p><div id="tailles">${tailles()}</div></div>`;
-      return `<div class="etape"><h3 id="q-etape">Votre layer cake</h3><p class="aide">Pour cette fête, je fais un layer cake. Choisissez sa taille.</p><div id="tailles">${tailles()}</div></div>`;
+      if (g[0] === 'wedding') return `<div class="etape"><h3 id="q-etape">Votre wedding cake</h3><p class="aide">Le prix se fait sur devis, selon le nombre d’invités.</p><div id="tailles">${tailles()}</div></div>`;
+      return `<div class="etape"><h3 id="q-etape">Votre layer cake</h3><p class="aide">Choisissez la taille.</p><div id="tailles">${tailles()}</div></div>`;
     },
-    () => `<div class="etape"><h3 id="q-etape">Quelle saveur ?</h3>${demande.gateau === 'number' ? '<p class="aide">Je vous confirme la garniture dans ma réponse.</p>' : ''}${groupe('saveur', saveursPour(demande.gateau).map(s => ({ v: s.nom, l: s.nom, s: s.desc, img: s.img })), demande.saveur)}</div>`,
+    () => `<div class="etape"><h3 id="q-etape">Quelle saveur ?</h3>${demande.gateau === 'number' ? '<p class="aide">Je vous confirme la garniture en vous répondant.</p>' : ''}${groupe('saveur', saveursPour(demande.gateau).map(s => ({ v: s.nom, l: s.nom, s: s.desc, img: s.img })), demande.saveur)}</div>`,
     () => { const d = decorPour(); return `<div class="etape"><h3 id="q-etape">Quel décor ?</h3><p class="aide">${d.aide}</p>
       <div class="champ"><label for="f-texte">${d.label}</label><input id="f-texte" name="texte" maxlength="40" value="${esc(demande.texte)}" placeholder="${d.exemple}"><p class="apercu-decor" id="apercuDecor" aria-hidden="true">${esc(demande.texte) || d.vide}</p></div>
       ${couleursEtIdees()}
       <fieldset class="champ groupe"><legend class="legende">Douceurs en plus, 3 € pièce</legend><div class="douceurs">${DOUCEURS.map(([k, l, un]) => `<div class="douceur"><label for="f-${k}">${l}</label>${compteur(k, un, demande[k], 200)}</div>`).join('')}</div></fieldset></div>`; },
-    () => `<div class="etape"><h3 id="q-etape">Pour quand et où ?</h3><p class="aide">Indiquez la date de la fête : je vous dis si elle est possible.</p>
+    () => `<div class="etape"><h3 id="q-etape">Pour quand et où ?</h3><p class="aide">Je vous dis si je suis disponible ce jour-là.</p>
       <div class="champ"><label for="f-date">Date de la fête</label><input id="f-date" name="date" type="date" aria-describedby="e-date" min="${MIN_DATE}" value="${demande.date}" required><small class="erreur" id="e-date" role="alert" hidden></small></div>
-      <div class="champ"><label for="f-ville">Ville de la fête</label><input id="f-ville" name="ville" value="${esc(demande.ville)}" autocomplete="address-level2" aria-describedby="a-ville"><small id="a-ville">Retrait ou livraison : je vous dis ce qui est possible dans ma réponse.</small></div></div>`,
-    () => `<div class="etape"><h3 id="q-etape">Vos coordonnées</h3><p class="aide">Pour que je sache à qui je réponds.</p>
+      <div class="champ"><label for="f-ville">Ville de la fête</label><input id="f-ville" name="ville" value="${esc(demande.ville)}" autocomplete="address-level2" aria-describedby="a-ville"><small id="a-ville">Retrait ou livraison, nous en parlons quand je vous réponds.</small></div></div>`,
+    () => `<div class="etape"><h3 id="q-etape">Et vous ?</h3>
       <div class="champ"><label for="f-nom">Votre prénom</label><input id="f-nom" name="nom" aria-describedby="e-nom" value="${esc(demande.nom)}" autocomplete="given-name" required><small class="erreur" id="e-nom" role="alert" hidden>Indiquez votre prénom.</small></div>
       <div class="champ"><label for="f-tel">Votre téléphone (facultatif)</label><input id="f-tel" name="tel" type="tel" value="${esc(demande.tel)}" autocomplete="tel"></div>
       <div class="champ"><label for="f-allergies">Allergies ou régime (facultatif)</label><input id="f-allergies" name="allergies" value="${esc(demande.allergies)}" placeholder="Par exemple : fruits à coque, sans alcool"></div>
       <div class="champ"><label for="f-mot">Un mot pour moi (facultatif)</label><textarea id="f-mot" name="mot" rows="3">${esc(demande.mot)}</textarea></div>
-      <p class="rgpd">Ces informations restent sur votre appareil le temps de votre visite : rien n’est enregistré ni envoyé par ce site. Elles servent seulement à préparer le message que vous m’enverrez sur Instagram.</p></div>`,
+      <p class="rgpd">Vos réponses restent sur votre téléphone ou votre ordinateur. Elles servent seulement à écrire le message que vous m’enverrez.</p></div>`,
   ];
 
   /* Ce que la fête autorise : le gâteau, puis la saveur ; un modèle choisi dans le mur disparaît si la fête change */
@@ -643,7 +642,7 @@
     navEtapes.hidden = true;
     const prenom = demande.texte.trim();
     zone.innerHTML = `<div class="etape fin">${prenom ? `<p class="prenom-fin" aria-hidden="true">${esc(prenom)}</p>` : ''}<h3 tabindex="-1" id="finTitre">Votre demande est prête.</h3>
-      <p class="aide">${ok ? 'Le message est copié. Ouvrez Instagram, collez-le dans votre message pour moi et envoyez.' : 'Copiez le message ci-dessous, ouvrez Instagram, collez-le dans votre message pour moi et envoyez.'} Pensez à joindre votre photo modèle si vous en avez une.</p>
+      <p class="aide">${ok ? 'Le message est copié. Collez-le dans Instagram et envoyez-le-moi.' : 'Copiez le message ci-dessous, collez-le dans Instagram et envoyez-le-moi.'} Ajoutez votre photo modèle si vous en avez une.</p>
       <div class="actions"><a class="btn" href="https://ig.me/m/cakeby_lk" target="_blank" rel="noopener">Ouvrir Instagram ${fleche}<span class="vh"> (nouvel onglet)</span></a><button class="btn btn-clair" type="button" id="recopier">${ok ? 'Copier à nouveau' : 'Copier le message'}</button><button class="btn btn-clair" type="button" id="modifier">Modifier</button></div>
       <p class="vh" role="status" id="copieStatut"></p>
       <p class="numero">Référence de la demande : ${ref}</p>
