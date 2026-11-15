@@ -53,6 +53,8 @@ p{text-wrap:pretty}
 .entete .conteneur{display:flex;align-items:center;justify-content:space-between;gap:24px;height:var(--entete)}
 .marque{display:flex;align-items:center;min-height:44px;gap:12px;text-decoration:none;font-weight:600;font-size:17px;white-space:nowrap}
 .marque svg{width:46px;height:auto;color:var(--or)}
+.marque-texte{display:flex;flex-direction:column;line-height:1.15}
+.marque-sous{font-size:13px;font-weight:400;letter-spacing:.01em;color:var(--doux)}
 .nav ul{display:flex;gap:30px;list-style:none;padding:0;font-weight:500;font-size:15.5px}
 .nav a{text-decoration:none;padding:12px 0}
 .nav a:hover{color:var(--or-texte)}
