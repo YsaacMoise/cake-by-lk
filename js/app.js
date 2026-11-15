@@ -95,10 +95,31 @@
      48 vues d'un même gâteau. Avec la scène : l'accueil reste collé, le défilement fait faire au gâteau un tour exact (il repart de face
      et arrive de face), puis il rétrécit et va prendre sa case dans le mur, qui monte par-dessus l'accueil. Remonter rejoue tout à l'envers.
      Sans la scène (mouvement réduit, écran très bas) : le gâteau reste dans l'accueil et se tourne à la main. */
+  /* Le mur rangé par occasion (choix de YKM du 15/11) : deux groupes, un gâteau en vedette chacun, le reste à la demande.
+     Le script construit les groupes à partir de la grille écrite dans index.html, qui reste telle quelle sans JavaScript. */
+  if (racine.classList.contains('mur-occasion')) {
+    const ancien = $('#mur'), tuiles = $$('.tuile', ancien);
+    const GROUPES = [
+      { titre: 'Anniversaires et fêtes', texte: 'Layer cakes dès 75 €, number cakes dès 30 €.', f: ['anniversaire', 'baby'], vedette: (t) => t.classList.contains('place') },
+      { titre: 'Mariages', texte: 'Wedding cakes sur devis, dès 5 € la part.', f: ['mariage'], vedette: (t) => t.querySelector('[data-vignette*="mariage-agrumes"]') },
+    ];
+    const bloc = document.createElement('div'); bloc.className = 'occasions'; bloc.id = 'mur';
+    GROUPES.forEach((g, i) => {
+      const liste = tuiles.filter((t) => g.f.includes(t.dataset.f));
+      const v = liste.find(g.vedette); if (v) { v.classList.add('vedette'); liste.splice(liste.indexOf(v), 1); liste.unshift(v); }
+      const sec = document.createElement('section'); sec.className = 'occasion'; sec.setAttribute('aria-labelledby', 'occ-' + i);
+      sec.innerHTML = `<div class="occasion-tete"><h3 id="occ-${i}">${g.titre}</h3><p>${g.texte}</p></div><ul class="occasion-grille"></ul><button class="btn btn-clair voir-plus" type="button" aria-expanded="false">Voir les ${liste.length} gâteaux</button>`;
+      liste.forEach((t) => $('.occasion-grille', sec).appendChild(t));
+      $('.voir-plus', sec).addEventListener('click', (e) => { sec.classList.add('ouverte'); e.currentTarget.hidden = true; });
+      bloc.appendChild(sec);
+    });
+    const note = $('#murNote'); if (note) { note.hidden = true; bloc.appendChild(note); }
+    ancien.replaceWith(bloc);
+  }
   const mur = $('#mur');
   /* L'ordre du clavier suit l'ordre visuel : la case du gâteau qui tourne est déplacée dans le code (2e case sous 1000 px, 5e au-dessus) */
   (() => {
-    const place = $('.tuile.place', mur); if (!place) return;
+    const place = $('.tuile.place', mur); if (!place || !mur.classList.contains('mur')) return;
     const large = matchMedia('(min-width:1000px)');
     const placer = () => {
       const autres = $$('.tuile', mur).filter((t) => t !== place);
@@ -141,7 +162,7 @@
         const c = colle.getBoundingClientRect(), n = niche.getBoundingClientRect();
         home = { x: n.left - c.left, y: n.top - c.top, w: n.width, h: n.height };
         boite.style.width = home.w + 'px'; boite.style.height = home.h + 'px';
-        rayonTuile = parseFloat(getComputedStyle(place.firstElementChild).borderTopLeftRadius) || 18;
+        rayonTuile = parseFloat(getComputedStyle($('.tuile-photo', place) || place.firstElementChild).borderTopLeftRadius) || 18;
         rayonBas = innerWidth < 768 ? 28 : 36;
         boite.classList.add('pret');
         indice.textContent = 'Défilez, je tourne';
@@ -186,7 +207,7 @@
       requestAnimationFrame(() => { if (scrollY < finConnue - 1) scrollTo({ top: finConnue, behavior: 'instant' }); });
     });
 
-    let finConnue = Infinity, fonduAccueil = '';
+    let finConnue = Infinity, fonduAccueil = '', decalAccueil = '';
     const accueilEl = $('.accueil'), texteAccueil = $$('.accueil-texte > *');
     function cadre() {
       let p = 0, e = 0;
@@ -197,7 +218,8 @@
         if (!boite.classList.contains('range')) { boite.classList.add('range'); place.classList.add('visible'); blocsTete.forEach((b) => { b.style.opacity = ''; }); }
       } else if (sceneOn) {
         const libre = !place.hidden; // un filtre peut cacher la case : le gâteau vise alors la première tuile visible et s'efface
-        const cible = (libre ? place : $('.tuile:not([hidden])', mur) || place).getBoundingClientRect();
+        const caseCible = libre ? place : $('.tuile:not([hidden])', mur) || place;
+        const cible = ($('.tuile-photo', caseCible) || caseCible).getBoundingClientRect();
         const haut = cible.top + scrollY;
         // le gâteau est rangé quand sa case arrive un peu sous le milieu de l'écran, et au plus tard là où mène le lien « Créations »
         const ancre = creations.getBoundingClientRect().top + scrollY - entete.offsetHeight - 8;
@@ -211,7 +233,13 @@
         e = lisse(brut);
         // la taille arrive avant la position : le gâteau est déjà petit quand il passe devant le titre de la section
         const s = lerp(1, cible.width / home.w, lisse(brut * 1.6));
-        const x = lerp(home.x, cible.left, e), y = lerp(home.y, cible.top, e), w = home.w * s, h = home.h * s;
+        // le texte de l'accueil défile normalement ; le gâteau, lui, reste à l'écran et glisse vers le milieu pendant qu'il tourne
+        const d = String(Math.round(scrollY));
+        if (d !== decalAccueil) { decalAccueil = d; accueilEl.style.setProperty('--decal', d); }
+        const haut0 = entete.offsetHeight, milieu = haut0 + (innerHeight - haut0 - home.h) / 2 - 24;
+        const y0 = lerp(home.y, Math.max(haut0 + 12, milieu), lisse(scrollY / (innerHeight * 0.5)));
+        if (recit) recit.style.translate = `0 ${Math.round(y0 - home.y)}px`;
+        const x = lerp(home.x, cible.left, e), y = lerp(y0, cible.top, e), w = home.w * s, h = home.h * s;
         boite.style.transform = `translate(${x}px,${y}px) scale(${s})`;
         const es = lisse(brut * 1.6);
         const rh = lerp(home.w / 2, rayonTuile / s, es), rb = lerp(rayonBas, rayonTuile / s, es);
@@ -327,6 +355,40 @@
     refFinale = '';
     allerA(1); versFormulaire();
   });
+
+  /* ---------- Ma carte : onglets par gâteau et saveurs à cliquer ---------- */
+  const ongletsClavier = (liste, activer) => liste.forEach((b, i) => b.addEventListener('keydown', (e) => {
+    const k = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key]; if (!k) return;
+    e.preventDefault(); const n = liste[(i + k + liste.length) % liste.length]; activer(n); n.focus();
+  }));
+  const onglets = $$('.carte-onglets [role="tab"]'), cartePhoto = $('#cartePhoto');
+  const choisirOnglet = (o) => {
+    onglets.forEach((x) => { const oui = x === o; x.setAttribute('aria-selected', oui); x.tabIndex = oui ? 0 : -1; $('#' + x.getAttribute('aria-controls')).hidden = !oui; });
+    if (cartePhoto && !cartePhoto.src.includes(o.dataset.photo)) {
+      cartePhoto.classList.add('change');
+      setTimeout(() => {
+        cartePhoto.srcset = `${o.dataset.photo}-480.webp 480w, ${o.dataset.photo}-${o.dataset.grand}.webp ${o.dataset.grand}w`;
+        cartePhoto.src = `${o.dataset.photo}-480.webp`; cartePhoto.alt = o.dataset.alt;
+        cartePhoto.onload = () => cartePhoto.classList.remove('change');
+      }, reduit ? 0 : 180);
+    }
+  };
+  onglets.forEach((o) => o.addEventListener('click', () => choisirOnglet(o)));
+  ongletsClavier(onglets, choisirOnglet);
+  $$('[data-composer]').forEach((b) => b.addEventListener('click', () => {
+    const t = b.dataset.composer;
+    demande.gateau = t; demande.occasion = t === 'number' ? 'Anniversaire' : t === 'wedding' ? 'Mariage' : demande.occasion;
+    refFinale = ''; allerA(demande.occasion ? 1 : 0); versFormulaire();
+  }));
+  const saveursBtns = $$('.saveurs-liste [role="tab"]');
+  const choisirSaveur = (b) => {
+    saveursBtns.forEach((x) => { const oui = x === b; x.setAttribute('aria-selected', oui); x.tabIndex = oui ? 0 : -1; });
+    $('#saveurDetail').setAttribute('aria-labelledby', b.id);
+    const img = $('#saveurImg'); img.src = `${b.dataset.img}-480.webp`; img.alt = b.dataset.alt;
+    $('#saveurNom').textContent = b.textContent.trim(); $('#saveurDesc').textContent = b.dataset.desc;
+  };
+  saveursBtns.forEach((b) => b.addEventListener('click', () => choisirSaveur(b)));
+  ongletsClavier(saveursBtns, choisirSaveur);
 
   /* ---------- Les écrans du formulaire ---------- */
   const option = (name, val, o) => {
