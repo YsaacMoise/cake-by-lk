@@ -37,7 +37,7 @@
     { nom: 'Fruits rouges', img: 'img/number-fruits-rouges-160.webp', desc: 'Biscuit, crème à la vanille, fraises et framboises' },
     { nom: 'Chocolat', img: 'img/number-chocolat-160.webp', desc: 'Biscuit, crème au chocolat, chocolats' },
   ];
-  const FETES = ['Anniversaire', 'Mariage', 'Baby shower ou gender reveal', 'Autre fête'];
+  const FETES = ['Anniversaire', 'Mariage', 'Baby shower ou gender reveal', 'Henné', 'Tahara', 'Autre fête'];
   const gateauxPour = (fete) => fete === 'Anniversaire' ? ['layer', 'number'] : fete === 'Mariage' ? ['wedding'] : fete ? ['layer'] : [];
   const saveursPour = (gateau) => gateau === 'number' ? GARNITURES : SAVEURS;
 
@@ -95,12 +95,13 @@
      48 vues d'un même gâteau. Avec la scène : l'accueil reste collé, le défilement fait faire au gâteau un tour exact (il repart de face
      et arrive de face), puis il rétrécit et va prendre sa case dans le mur, qui monte par-dessus l'accueil. Remonter rejoue tout à l'envers.
      Sans la scène (mouvement réduit, écran très bas) : le gâteau reste dans l'accueil et se tourne à la main. */
-  /* Le mur rangé par occasion (choix de YKM du 15/11) : deux groupes, un gâteau en vedette chacun, le reste à la demande.
+  /* Le mur rangé par occasion (choix de YKM du 15/11) : trois groupes, un gâteau en vedette chacun, le reste à la demande.
      Le script construit les groupes à partir de la grille écrite dans index.html, qui reste telle quelle sans JavaScript. */
   if (racine.classList.contains('mur-occasion')) {
     const ancien = $('#mur'), tuiles = $$('.tuile', ancien);
     const GROUPES = [
-      { titre: 'Anniversaires et fêtes', texte: 'Layer cakes dès 75 €, number cakes dès 30 €.', f: ['anniversaire', 'baby'], vedette: (t) => t.classList.contains('place') },
+      { titre: 'Anniversaires et fêtes', texte: 'Layer cakes dès 75 €, number cakes dès 30 €.', f: ['anniversaire', 'baby', 'tahara'], vedette: (t) => t.classList.contains('place') },
+      { titre: 'Gâteaux à thème', texte: 'Le personnage, le club ou l’univers que vous voulez. Layer cakes dès 75 €.', f: ['theme'], vedette: (t) => t.querySelector('[data-vignette*="theme-stitch"]') },
       { titre: 'Mariages', texte: 'Wedding cakes et pièces montées, sur devis, dès 5 € la part.', f: ['mariage'], vedette: (t) => t.querySelector('[data-vignette*="mariage-agrumes"]') },
     ];
     const bloc = document.createElement('div'); bloc.className = 'occasions'; bloc.id = 'mur';
@@ -299,8 +300,8 @@
   $$('a[href="#formulaire"]').forEach(a => a.addEventListener('click', (e) => { e.preventDefault(); versFormulaire(); }));
 
   /* ---------- Le mur : filtres et fiche d'un gâteau ---------- */
-  const FETE_TUILE = { anniversaire: 'Anniversaire', mariage: 'Mariage', baby: 'Baby shower' };
-  const FETE_DEMANDE = { anniversaire: 'Anniversaire', mariage: 'Mariage', baby: 'Baby shower ou gender reveal' };
+  const FETE_TUILE = { anniversaire: 'Anniversaire', mariage: 'Mariage', baby: 'Baby shower', theme: 'Gâteau à thème', tahara: 'Tahara' };
+  const FETE_DEMANDE = { anniversaire: 'Anniversaire', mariage: 'Mariage', baby: 'Baby shower ou gender reveal', theme: 'Anniversaire', tahara: 'Tahara' };
   const PRIX_TYPE = { layer: 'à partir de 75 €', number: 'à partir de 30 €', wedding: 'sur devis, à partir de 5 € la part' };
   /* Un filtre : le chapô compte les gâteaux montrés, et une case dit ce que je fais pour cette fête, avec un bouton qui ouvre
      le formulaire la fête déjà choisie (utile surtout pour le baby shower, qui n'a encore qu'une photo) */
@@ -310,11 +311,13 @@
     anniversaire: () => `Mes gâteaux d’anniversaire.${SUITE}`,
     mariage: () => `Mes wedding cakes.${SUITE}`,
     baby: () => `Mes gâteaux de baby shower.${SUITE}`,
+    theme: () => `Mes gâteaux à thème.${SUITE}`,
   };
   const NOTE = {
     anniversaire: 'Pour un anniversaire, je fais un layer cake ou un number cake.',
     mariage: 'Pour un mariage, je fais un wedding cake, sur devis.',
     baby: 'Pour un baby shower ou un gender reveal, je fais un layer cake.',
+    theme: 'Pour un gâteau à thème, je fais un layer cake.',
   };
   const murNote = $('#murNote');
   let filtreActif = 'tous';
@@ -350,7 +353,9 @@
     demande.occasion = FETE_DEMANDE[b.closest('.tuile').dataset.f];
     demande.gateau = b.dataset.type;
     if (b.dataset.chiffre) demande.chiffre = b.dataset.chiffre;
-    demande.modele = b.dataset.titre; demande.modeleImg = b.dataset.vignette; demande.modeleFete = demande.occasion;
+    demande.modele = b.dataset.titre; demande.modeleImg = b.dataset.vignette;
+    // un gâteau à thème va avec toutes les fêtes sauf le mariage : le modèle reste si la fête change
+    demande.modeleFete = b.closest('.tuile').dataset.f === 'theme' ? '*' : demande.occasion;
     refFinale = '';
     allerA(1); versFormulaire();
   });
@@ -459,7 +464,7 @@
     const g = gateauxPour(demande.occasion);
     if (!g.includes(demande.gateau)) demande.gateau = g.length === 1 ? g[0] : '';
     if (demande.saveur && !saveursPour(demande.gateau).some(s => s.nom === demande.saveur)) demande.saveur = '';
-    if (demande.modele && demande.modeleFete !== demande.occasion) { demande.modele = ''; demande.modeleImg = ''; demande.modeleFete = ''; }
+    if (demande.modele && (demande.modeleFete === '*' ? demande.occasion === 'Mariage' : demande.modeleFete !== demande.occasion)) { demande.modele = ''; demande.modeleImg = ''; demande.modeleFete = ''; }
   }
   function allerA(i) {
     etape = Math.max(0, Math.min(i, 6));
