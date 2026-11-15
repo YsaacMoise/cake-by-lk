@@ -1,0 +1,9 @@
+# Pas en ligne : anciennes maquettes, image source lourde, fiches de provenance des images
+_hero/
+partage.png
+*.json
+# Système
+Thumbs.db
+desktop.ini
+.DS_Store
+.env

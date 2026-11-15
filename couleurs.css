@@ -1,0 +1,14 @@
+:root {
+  --couleur-fond: #FFFFFF; /* oklch(100.0% 0.000 0.0) */
+  --couleur-surface: #F7F1EA; /* oklch(96.1% 0.011 71.9) */
+  --couleur-encre: #2B1D16; /* oklch(24.6% 0.026 47.7) */
+  --couleur-texte-secondaire: #6B5A4E; /* oklch(48.1% 0.029 57.2) */
+  --couleur-bordure: #E8DDD0; /* oklch(90.3% 0.021 72.1) */
+  --couleur-accent: #B08532; /* oklch(64.3% 0.112 80.6) */
+  --couleur-accent-texte: #8A6420; /* oklch(53.0% 0.096 78.0) */
+  --couleur-texte-sur-accent: #2B1D16; /* oklch(24.6% 0.026 47.7) */
+  --couleur-accent2: #F3CBD1; /* oklch(87.8% 0.046 7.9) */
+  --couleur-accent3: #C8435F; /* oklch(57.7% 0.169 11.7) */
+  --couleur-texte-sur-encre: #D8C9BC; /* oklch(84.5% 0.025 63.4) */
+  --couleur-bordure-champ: #958070; /* oklch(61.5% 0.035 59.4) */
+}

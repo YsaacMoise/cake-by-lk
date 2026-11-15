@@ -1,0 +1,397 @@
+/* Cake by LK — feuille de style réécrite au propre le 14/11/2026 (séance 9). Direction : DESIGN.md, « Le prénom doré ».
+   Jetons de couleur : couleurs.css (palette .gout/palette.json). Ordre : jetons, base, boutons, en-tête, accueil et scène,
+   sections, mur, fiche, carte, composer, pied, barre fixe, écrans étroits, mouvement réduit. */
+
+/* ---------- 1. Jetons ---------- */
+:root{
+  --fond:var(--couleur-fond);--surface:var(--couleur-surface);--encre:var(--couleur-encre);--doux:var(--couleur-texte-secondaire);
+  --bord:var(--couleur-bordure);--bord-champ:var(--couleur-bordure-champ);--or:var(--couleur-accent);--or-texte:var(--couleur-accent-texte);
+  --rose:var(--couleur-accent2);--sur-encre:var(--couleur-texte-sur-encre);
+  --encre-survol:#45302A;--or-survol:#C29444;--erreur:#A3283F;
+  --voile:rgb(255 255 255 / .94);--trait-doux:rgb(43 29 22 / .14);--ligne-sur-encre:rgb(255 255 255 / .18);--ombre:rgb(43 29 22 / .45);--rideau:rgb(43 29 22 / .6);
+  --sur-rose:color-mix(in srgb,var(--encre) 82%,var(--rose));--pointilles:color-mix(in srgb,var(--encre) 45%,var(--rose));--trait-rose:color-mix(in srgb,var(--encre) 18%,var(--rose));
+  --c:'Hanken Grotesk',system-ui,sans-serif;--script:'Pinyon Script',cursive;
+  --marge:clamp(18px,4vw,56px);--entete:76px;--sortie:cubic-bezier(.16,1,.3,1);
+}
+
+/* ---------- 2. Base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--entete) + 8px);-webkit-text-size-adjust:100%}
+html,body{overflow-x:clip}
+body{background:var(--fond);color:var(--encre);font:400 17px/1.55 var(--c);-webkit-font-smoothing:antialiased;font-synthesis:none;caret-color:var(--or-texte);accent-color:var(--encre)}
+img,svg,canvas{display:block;max-width:100%}
+img{height:auto}
+a{color:inherit;text-underline-offset:4px}
+button,input,textarea{font:inherit;color:inherit}
+::selection{background:var(--rose);color:var(--encre)}
+:focus-visible{outline:2px solid var(--or-texte);outline-offset:3px;border-radius:6px}
+h1,h2,h3,h4{text-wrap:balance;letter-spacing:-.03em;line-height:1.02;font-weight:600}
+p{text-wrap:pretty}
+.nowrap{white-space:nowrap}
+.script{font-family:var(--script);font-weight:400;letter-spacing:0;color:var(--or)}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.conteneur{padding-inline:var(--marge);max-width:1440px;margin-inline:auto}
+.evitement{position:absolute;left:12px;top:-80px;z-index:99;min-height:44px;display:inline-flex;align-items:center;padding:0 18px;border-radius:999px;background:var(--encre);color:var(--fond);font-weight:600;text-decoration:none}
+.evitement:focus{top:12px}
+
+/* ---------- 3. Boutons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;border:0;border-radius:999px;background:var(--encre);color:var(--fond);font:600 16px/1 var(--c);padding:0 26px;text-decoration:none;cursor:pointer;transition:background .2s,transform .2s var(--sortie)}
+.btn:hover{background:var(--encre-survol);transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+.btn svg{width:18px;height:18px;flex:none}
+.btn-or{background:var(--or);color:var(--encre)}
+.btn-or:hover{background:var(--or-survol)}
+.btn-clair{background:transparent;color:var(--encre);box-shadow:inset 0 0 0 1.5px var(--bord-champ)}
+.btn-clair:hover{background:var(--surface)}
+.lien-retirer{min-height:44px;border:0;background:none;padding:0 4px;font:600 15px var(--c);color:var(--encre);text-decoration:underline;text-decoration-color:var(--bord-champ);text-underline-offset:5px;cursor:pointer}
+
+/* ---------- 4. En-tête ---------- */
+.entete{position:sticky;top:0;z-index:50;background:var(--fond);border-bottom:1px solid transparent;transition:border-color .2s}
+.entete.defile{border-color:var(--bord)}
+.entete .conteneur{display:flex;align-items:center;justify-content:space-between;gap:24px;height:var(--entete)}
+.marque{display:flex;align-items:center;min-height:44px;gap:12px;text-decoration:none;font-weight:600;font-size:17px;white-space:nowrap}
+.marque svg{width:46px;height:auto;color:var(--or)}
+.nav ul{display:flex;gap:30px;list-style:none;padding:0;font-weight:500;font-size:15.5px}
+.nav a{text-decoration:none;padding:12px 0}
+.nav a:hover{color:var(--or-texte)}
+.menu-btn{display:none;min-height:44px;border:1.5px solid var(--encre);background:none;border-radius:999px;padding:0 18px;font-weight:600;font-size:15px;cursor:pointer}
+
+/* ---------- 5. Accueil et scène ----------
+   Sans scène (pas de JavaScript, mouvement réduit, écran très bas) : le texte et le gâteau se suivent normalement.
+   Avec la scène (classe scene-on) : l'accueil reste collé pendant que la page défile ; le gâteau, posé en position fixe par le script,
+   tourne avec le défilement puis va prendre sa place dans le mur de la section Créations, qui monte par-dessus l'accueil. */
+.scene{background:var(--surface)}
+.accueil{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(24px,4vw,72px);align-items:center;padding-block:clamp(28px,4vw,56px)}
+.accueil-texte{display:flex;flex-direction:column;align-items:flex-start;gap:20px}
+h1{font-size:clamp(46px,5.6vw,86px);line-height:.98;letter-spacing:-.04em}
+.sous{font-size:18.5px;color:var(--doux);max-width:42ch}
+.tarifs-ligne{display:flex;gap:6px 24px;flex-wrap:wrap;margin-top:4px;padding-top:18px;border-top:1px solid var(--bord);font-size:15.5px;color:var(--doux);align-self:stretch}
+.tarifs-ligne b{color:var(--encre);font-weight:600}
+.niche{position:relative;width:min(44vw,calc(min(76svh,720px) * .75));aspect-ratio:3/4}
+.tourne{position:relative;width:100%;height:100%;border-radius:999px 999px 36px 36px;overflow:hidden;background:var(--surface);cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;box-shadow:0 40px 80px -50px var(--ombre);outline-offset:4px}
+.tourne:active{cursor:grabbing}
+.tourne canvas,.tourne img{width:100%;height:100%;object-fit:cover}
+.tourne-indice{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:var(--voile);border-radius:999px;padding:9px 16px;font-size:14px;font-weight:500;white-space:nowrap;transition:opacity .4s;pointer-events:none}
+.tourne-indice svg{width:18px;height:18px;animation:saute 1.8s ease-in-out infinite}
+@keyframes saute{50%{transform:translateY(3px)}}
+.tourne.touche .tourne-indice{opacity:0}
+html:not(.scene-on) .tourne-indice svg{display:none}
+
+.scene-on .scene{height:270svh;margin-top:calc(-1 * var(--entete))}
+.scene-on .scene-colle{position:sticky;top:0;height:100svh;padding-top:var(--entete);display:flex;flex-direction:column;justify-content:center}
+.scene-on .scene > .tourne{position:fixed;left:0;top:0;z-index:2;transform-origin:0 0;will-change:transform;visibility:hidden}
+.scene-on .scene > .tourne.pret{visibility:visible}
+.scene-on .scene > .tourne.range{visibility:hidden}
+/* Le récit du tour : sous l'arche, trois traits qui se remplissent avec le défilement et une phrase par tiers de tour.
+   Sur ordinateur et tablette, il remplace l'indice posé sur la photo ; sur téléphone, il prend la place de la ligne des prix
+   une fois le défilement commencé (les prix sont vus à l'arrivée et reviennent en remontant). */
+.recit{display:none}
+.scene-on .recit{position:absolute;left:0;right:0;top:calc(100% + 16px);display:flex;flex-direction:column;align-items:center;gap:10px;transition:opacity .3s;pointer-events:none}
+.recit-barre{display:flex;gap:6px}
+.recit-barre i{position:relative;width:36px;height:3px;border-radius:2px;background:var(--trait-doux);overflow:hidden}
+.recit-barre i::after{content:'';position:absolute;inset:0;background:var(--encre);transform:scaleX(var(--r,0));transform-origin:left}
+.recit-texte{display:flex;align-items:center;justify-content:center;gap:8px;min-height:1.3em;font-size:15.5px;font-weight:600;line-height:1.3;text-align:center;text-wrap:balance}
+.recit-texte svg{width:18px;height:18px;flex:none;animation:saute 1.8s ease-in-out infinite}
+.recit-texte.change{animation:apparait .3s var(--sortie) both}
+@media (min-width:768px){
+  .scene-on .tourne-indice{display:none}
+  /* l'arche laisse sous elle la place du récit, même sur un portable peu haut (1280 × 720) */
+  .scene-on .niche{width:min(44vw,calc(min(100svh - var(--entete) - 150px,720px) * .75))}
+}
+
+/* ---------- 6. Sections ---------- */
+.section{padding-block:clamp(72px,9vw,128px)}
+.section-tete{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:clamp(28px,4vw,48px)}
+h2{font-size:clamp(36px,4.2vw,60px)}
+h2 .script{font-size:1.18em;line-height:.8}
+.chapo{font-size:18px;color:var(--doux);max-width:46ch;margin-top:12px}
+
+/* ---------- 7. Créations : le mur ---------- */
+.creations{position:relative;z-index:1;background:var(--fond);padding-top:clamp(48px,6vw,88px)}
+.scene-on .creations{margin-top:-100svh;min-height:100svh;border-radius:34px 34px 0 0;box-shadow:0 -24px 60px -36px var(--ombre)}
+.filtres{display:flex;gap:8px;flex-wrap:wrap}
+.filtre{min-height:44px;border:1.5px solid var(--bord-champ);background:var(--fond);border-radius:999px;padding:0 18px;font-weight:600;font-size:15px;cursor:pointer;transition:background .2s,border-color .2s}
+.filtre:hover{background:var(--surface)}
+.filtre[aria-pressed="true"]{background:var(--encre);border-color:var(--encre);color:var(--fond)}
+.mur{list-style:none;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+/* Sans JavaScript, la case du gâteau passe en 5e colonne par la grille ; avec lui, le script la déplace dans le code pour que
+   l'ordre du clavier suive l'ordre visuel (2e case sur téléphone et tablette, 5e sur ordinateur). */
+@media (min-width:1000px){.mur:not(.ordre-js) .tuile.place{grid-column:5;grid-row:1}}
+/* Avec un filtre : une case qui dit ce que je fais pour cette fête et mène au formulaire, la fête déjà choisie */
+.mur-note{grid-column:span 2;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:16px;border-radius:18px;background:var(--surface);padding:clamp(18px,2vw,28px)}
+.mur-note p{font-size:17px;font-weight:600;line-height:1.35;max-width:30ch}
+.tuile button{position:relative;display:block;width:100%;aspect-ratio:3/4;border:0;padding:0;border-radius:18px;overflow:hidden;background:var(--surface);cursor:pointer}
+.tuile button:focus-visible{border-radius:18px}
+.tuile img,.tuile canvas{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--sortie)}
+.tuile.place canvas{visibility:hidden}
+.tuile.place.visible canvas,html:not(.scene-on) .tuile.place canvas{visibility:visible}
+.tuile-nom{position:absolute;left:8px;right:8px;bottom:8px;background:var(--voile);border-radius:12px;padding:8px 10px;font-size:14px;font-weight:600;line-height:1.3;text-align:left;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s var(--sortie)}
+@media (hover:hover){
+  .tuile button:hover img,.tuile button:hover canvas{transform:scale(1.04)}
+  .tuile button:hover .tuile-nom{opacity:1;transform:none}
+}
+.tuile button:focus-visible .tuile-nom{opacity:1;transform:none}
+
+/* ---------- 8. Fiche d'un gâteau ---------- */
+.fiche{border:0;padding:0;margin:auto;width:min(860px,calc(100% - 32px));max-width:none;max-height:calc(100svh - 32px);border-radius:28px;overflow:hidden;background:var(--fond);color:var(--encre);box-shadow:0 40px 80px -30px var(--ombre)}
+.fiche[open]{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);animation:fiche-entre .35s var(--sortie)}
+.fiche::backdrop{background:var(--rideau);animation:voile-entre .25s ease-out}
+@keyframes fiche-entre{from{opacity:0;transform:translateY(16px)}}
+@keyframes voile-entre{from{opacity:0}}
+.fiche img{width:100%;height:100%;max-height:calc(100svh - 32px);aspect-ratio:4/5;object-fit:cover;background:var(--surface)}
+.fiche-texte{display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:clamp(20px,3vw,36px)}
+.fiche-texte h3{font-size:clamp(24px,2.4vw,32px);line-height:1.08}
+.fiche-texte p{color:var(--doux);font-size:16.5px}
+.fiche-texte .btn{margin-top:14px;align-self:flex-start}
+.fiche-fermer{position:absolute;top:12px;right:12px;z-index:1;width:44px;height:44px;border:0;border-radius:50%;background:var(--voile);display:grid;place-items:center;cursor:pointer;transition:transform .2s var(--sortie)}
+.fiche-fermer:hover{transform:scale(1.06)}
+.fiche-fermer svg{width:20px;height:20px}
+
+/* ---------- 9. Ma carte : un menu, tout visible ---------- */
+.carte,#commander,.pied{position:relative;z-index:1}
+#commander{background:var(--fond)}
+.carte{background:var(--rose)}
+.carte ::selection{background:var(--encre);color:var(--fond)}
+.carte .chapo{color:var(--sur-rose)}
+.carte-prix{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(36px,4vw,56px) clamp(28px,3.5vw,56px)}
+.carte-groupe h3,.carte-saveurs h3{font-size:clamp(26px,2.4vw,34px);line-height:1.05}
+.carte-groupe h3{margin-bottom:10px}
+.lignes div{display:flex;align-items:baseline;gap:10px;padding-block:8px}
+.lignes dt{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;font-size:19px}
+.lignes dt::after{content:'';flex:1;min-width:14px;border-bottom:2px dotted var(--pointilles);transform:translateY(-5px)}
+.lignes dd{font-size:21px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pour{margin-top:8px;font-size:15.5px;color:var(--sur-rose)}
+.carte-saveurs{margin-top:clamp(48px,6vw,88px);padding-top:clamp(36px,4vw,56px);border-top:1px solid var(--trait-rose)}
+.carte-saveurs h3{margin-bottom:clamp(24px,3vw,36px)}
+.saveurs{list-style:none;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(16px,2.4vw,36px)}
+.saveurs li{display:flex;flex-direction:column;gap:18px}
+.saveurs img{width:clamp(108px,11vw,150px);aspect-ratio:1;border-radius:50%;object-fit:cover;box-shadow:0 0 0 6px var(--fond)}
+.saveurs h4{font-size:21px;line-height:1.15;letter-spacing:-.02em}
+.saveurs p{margin-top:6px;font-size:15.5px;line-height:1.45;color:var(--sur-rose)}
+
+/* ---------- 10. Composer ---------- */
+.etapes-cmd{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin-bottom:clamp(28px,4vw,48px);counter-reset:e}
+.etapes-cmd li{display:flex;gap:14px;align-items:flex-start;border-top:1px solid var(--bord);padding-top:16px}
+.etapes-cmd li::before{counter-increment:e;content:counter(e);font:700 22px/1.25 var(--c);color:var(--or-texte);min-width:20px;font-variant-numeric:tabular-nums}
+.etapes-cmd b{display:block;font-size:17px;font-weight:600}
+.etapes-cmd span{font-size:15px;color:var(--doux)}
+.composeur{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);gap:clamp(20px,3vw,40px);align-items:start}
+.formulaire{border:1px solid var(--bord);border-radius:34px;padding:clamp(20px,3vw,40px);background:var(--fond)}
+.progression{display:flex;gap:6px;list-style:none;padding:0;margin-bottom:26px;flex-wrap:wrap}
+.progression li{font-size:14px;font-weight:600;color:var(--doux);padding:8px 12px;border-radius:999px;background:var(--surface)}
+.progression li[aria-current="step"]{background:var(--encre);color:var(--fond)}
+.progression li.fait{color:var(--encre)}
+.etape h3{font-size:clamp(26px,2.6vw,34px);margin-bottom:8px}
+.etape .aide{color:var(--doux);font-size:16px;margin-bottom:20px;max-width:56ch}
+.etape h3 + .options,.etape h3 + .champ{margin-top:20px}
+
+/* Une option = une ligne cliquable : pastille ronde, nom, détail, prix à droite. Sert à la fête, à la taille et à la saveur. */
+.options{display:grid;gap:8px}
+.options.deux{grid-template-columns:repeat(2,minmax(0,1fr))}
+.option{position:relative;display:flex;align-items:center;gap:14px;min-height:60px;border:1.5px solid var(--bord-champ);border-radius:16px;padding:10px 16px 10px 14px;background:var(--fond);cursor:pointer;transition:border-color .15s,background .15s,transform .2s var(--sortie)}
+@media (hover:hover){.option:hover{background:var(--surface)}}
+.option:active{transform:scale(.99)}
+.option input{position:absolute;opacity:0;pointer-events:none}
+.option::before{content:'';flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--bord-champ);background:var(--fond) center/13px no-repeat}
+.option.choisi{border-color:var(--encre);background:var(--surface)}
+.option.choisi::before{border-color:var(--or);background-color:var(--or);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232B1D16' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");animation:coche .35s var(--sortie) both}
+@keyframes coche{from{transform:scale(.4);opacity:0}}
+.option:has(input:focus-visible){outline:2px solid var(--or-texte);outline-offset:2px}
+.option > img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none}
+.option-texte{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;font-weight:600;line-height:1.3}
+.option-texte small{font-weight:400;font-size:14.5px;line-height:1.4;color:var(--doux)}
+.option-droite{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* Le choix entre deux gâteaux (anniversaire) : la photo d'un vrai gâteau au-dessus du nom */
+.options.types{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.option.type{flex-direction:column;align-items:stretch;gap:0;padding:0;overflow:hidden}
+.option.type > img{width:100%;height:auto;aspect-ratio:3/2;object-position:50% 58%;border-radius:0}
+.option.type .option-texte{padding:14px 16px 16px}
+.option.type::before{position:absolute;top:12px;right:12px;z-index:1}
+
+.champ{display:flex;flex-direction:column;gap:6px;margin-top:20px}
+.champ label,.legende{font-weight:600;font-size:15px}
+.legende{margin-bottom:8px;padding:0}
+.champ input,.champ textarea{border:1.5px solid var(--bord-champ);border-radius:14px;background:var(--fond);padding:13px 14px;font-size:16.5px;min-height:50px}
+.champ input:focus-visible,.champ textarea:focus-visible{outline-offset:2px;border-radius:14px}
+.champ small{font-size:14px;color:var(--doux)}
+.champ.court input{max-width:160px}
+fieldset.groupe{border:0;padding:0;min-width:0}
+.erreur,small.erreur{display:block;color:var(--erreur);font-weight:600;font-size:14px;margin-top:8px}
+[aria-invalid="true"]{border-color:var(--erreur)!important}
+.note-taille{margin-top:14px;font-size:16px;color:var(--doux)}
+.note-taille b{color:var(--encre)}
+.qte{display:grid;grid-template-columns:44px 64px 44px;align-items:center;gap:4px}
+.qte button{width:44px;height:44px;border:1.5px solid var(--bord-champ);border-radius:50%;background:var(--fond);display:grid;place-items:center;cursor:pointer;transition:background .15s}
+.qte button:hover{background:var(--surface)}
+.qte button:active{transform:scale(.94)}
+.qte button svg{width:18px;height:18px}
+.qte input{width:64px;min-height:44px;padding:0;text-align:center;border-radius:12px;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;-moz-appearance:textfield;appearance:textfield}
+.qte input::-webkit-outer-spin-button,.qte input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.douceurs{display:flex;flex-direction:column}
+.douceur{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--bord);padding-block:8px}
+.douceur label{font-size:16px}
+.pastilles{display:flex;gap:8px;flex-wrap:wrap}
+.pastilles label{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--bord-champ);border-radius:999px;padding:10px 14px;font-weight:600;font-size:15px;cursor:pointer;min-height:44px}
+.pastilles label i{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--trait-doux)}
+.pastilles input{position:absolute;opacity:0;pointer-events:none}
+.pastilles label.choisi{border-color:var(--encre);background:var(--surface)}
+.pastilles label:has(input:focus-visible){outline:2px solid var(--or-texte);outline-offset:2px}
+.apercu-decor{font:400 clamp(48px,5vw,64px)/1.2 var(--script);color:var(--or);white-space:nowrap;overflow:hidden;margin-top:6px}
+.rgpd{font-size:14px;color:var(--doux);margin-top:18px}
+.nav-etapes{display:flex;justify-content:space-between;gap:12px;margin-top:30px;padding-top:22px;border-top:1px solid var(--bord)}
+.nav-prix{display:none}
+
+.reprise,.modele-choisi{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;border-radius:18px;padding:12px 16px;margin-bottom:18px;font-size:15.5px}
+.reprise{background:var(--encre);color:var(--fond)}
+.reprise-actions{display:flex;align-items:center;gap:14px}
+.reprise .btn{background:var(--or);color:var(--encre);min-height:44px;padding:0 18px;font-size:15px}
+.reprise .lien-retirer{color:var(--fond);text-decoration-color:var(--ligne-sur-encre)}
+.modele-choisi{background:var(--surface)}
+.modele-choisi p{flex:1 1 200px}
+.modele-vignette{flex:none;width:56px;height:56px}
+.modele-vignette:empty{display:none}
+.modele-vignette img{width:56px;height:56px;border-radius:50%;object-fit:cover}
+
+.recap{position:sticky;top:calc(var(--entete) + 20px);border-radius:34px;background:var(--surface);padding:clamp(20px,2.4vw,32px)}
+.recap-modele{border-radius:22px;overflow:hidden;aspect-ratio:4/3;margin-bottom:14px;background:var(--fond)}
+.recap-modele img{width:100%;height:100%;object-fit:cover;object-position:50% 45%}
+.prenom-recap{font:400 54px/1.1 var(--script);color:var(--or-texte);min-height:1.1em;white-space:nowrap;overflow:hidden}
+.prenom-recap.vide{font:600 22px/1.3 var(--c);color:var(--doux);letter-spacing:-.01em}
+.recap dl{margin-top:10px}
+.recap dt{font-size:14px;font-weight:600;color:var(--doux);margin-top:12px}
+.recap dd{font-size:16px;font-weight:600;overflow-wrap:anywhere}
+.recap .total{margin-top:20px;padding-top:18px;border-top:1px solid var(--bord)}
+.recap .total b{display:block;font-size:34px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+.recap .total small{display:block;font-size:14px;line-height:1.45;color:var(--doux)}
+.recap .total b + small{margin-top:6px}
+.nav-prix.maj,.recap .total b.maj{animation:apparait .4s var(--sortie) both}
+@keyframes apparait{from{opacity:0;transform:translateY(6px)}}
+
+.prenom-fin{font:400 clamp(52px,6vw,72px)/1.1 var(--script);color:var(--or);margin-bottom:6px;white-space:nowrap;overflow:hidden}
+.fin .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.fin .actions .btn{flex:1 1 auto}
+.fin .numero{margin-top:18px;font-size:14.5px;font-weight:600;color:var(--doux);font-variant-numeric:tabular-nums}
+.fin pre{white-space:pre-wrap;overflow-wrap:anywhere;font:400 15px/1.55 var(--c);border:1px solid var(--bord);border-radius:18px;padding:16px;margin-top:20px;color:var(--doux)}
+
+/* ---------- 11. Pied ---------- */
+.pied{background:var(--encre);color:var(--fond);padding-block:56px 40px}
+.pied .conteneur{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:start}
+.pied p{color:var(--sur-encre);font-size:15.5px;margin-top:12px;max-width:46ch}
+.pied h2{font-size:16px;letter-spacing:0;color:var(--sur-encre);margin-bottom:12px}
+.pied ul{list-style:none;padding:0}
+.pied li a{display:inline-flex;align-items:center;min-height:44px}
+.pied a{text-decoration:none}
+.pied a:hover{color:var(--or)}
+.pied .grand{font:600 22px/1.3 var(--c);color:var(--fond);letter-spacing:-.01em;margin-top:0}
+
+/* ---------- 12. Barre fixe (téléphone) ---------- */
+.barre{display:none}
+
+/* ---------- 13. Écrans étroits ---------- */
+@media (max-width:999px){
+  .mur{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .mur-note{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  .carte-prix{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .composeur{grid-template-columns:minmax(0,1fr) 250px}
+  .prenom-recap{font-size:40px}
+  .pied .conteneur{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
+@media (max-width:860px){
+  :root{--entete:68px}
+  .nav,.entete .btn{display:none}
+  .menu-btn{display:block}
+  .nav.ouvert{display:block;position:absolute;left:0;right:0;top:var(--entete);background:var(--fond);border-bottom:1px solid var(--bord);padding:8px var(--marge) 20px}
+  .nav.ouvert ul{flex-direction:column;gap:0}
+  .nav.ouvert a{display:block;padding:14px 0;font-size:18px;border-bottom:1px solid var(--bord)}
+  .saveurs{grid-template-columns:minmax(0,1fr);gap:20px}
+  .saveurs li{flex-direction:row;align-items:center;gap:18px}
+  .saveurs img{width:96px;flex:none}
+  .etapes-cmd{grid-template-columns:minmax(0,1fr);gap:8px}
+  .etapes-cmd li{padding-top:12px}
+}
+@media (min-width:768px) and (max-width:860px){
+  .entete .btn{display:inline-flex;margin-left:auto;min-height:44px;padding:0 20px;font-size:15px}
+  .entete .conteneur{gap:12px}
+}
+@media (max-width:767px){
+  html{scroll-padding-bottom:150px}
+  /* Accueil : tout le premier écran tient en une colonne ; la hauteur du gâteau se calcule pour laisser la place au bouton et aux prix */
+  .accueil{display:flex;flex-direction:column;align-items:stretch;gap:14px;padding-block:14px}
+  .scene-on .scene-colle{justify-content:flex-start}
+  .accueil-texte{display:contents}
+  h1{order:1;font-size:44px}
+  .sous{order:2;font-size:16.5px;max-width:none}
+  .accueil-texte .btn{order:3;width:100%}
+  .niche{order:4;align-self:center;width:min(100%,420px,calc(clamp(190px,100svh - 478px,480px) * .75))}
+  .tourne{border-radius:999px 999px 28px 28px}
+  .tarifs-ligne{order:5;font-size:16px;gap:4px 18px;margin-top:0;padding-top:14px;transition:opacity .3s}
+  html:not(.scene-on) .niche{width:min(100%,420px)}
+  .scene-on .recit{top:calc(100% + 14px);left:50%;right:auto;width:calc(100vw - 2 * var(--marge));transform:translateX(-50%);opacity:0}
+  .recit-actif .recit{opacity:1}
+  .recit-actif .tarifs-ligne{opacity:0}
+  .recit-texte{font-size:16px}
+  .mur-note{padding:16px 18px;gap:12px}
+  .mur-note p{font-size:16px}
+
+  .carte-tete .btn{display:none}
+  .pour,.saveurs p{font-size:16px}
+  .mur{gap:6px}
+  .tuile button,.tuile button:focus-visible{border-radius:12px}
+  .fiche{width:100%;margin:auto 0 0;max-height:94svh;border-radius:28px 28px 0 0}
+  .fiche[open]{grid-template-columns:minmax(0,1fr)}
+  .fiche img{max-height:58svh}
+  .fiche-texte .btn{align-self:stretch}
+
+  .composeur{grid-template-columns:minmax(0,1fr)}
+  .recap{position:static}
+  .recap-modele{display:none}
+  .recap .total b{font-size:26px}
+  .formulaire{padding-bottom:0}
+  .fin{padding-bottom:24px}
+  .progression{gap:8px;align-items:center;margin-bottom:20px}
+  .progression li{position:relative;width:8px;height:8px;padding:0;overflow:hidden;background:none}
+  .progression li::before{content:'';position:absolute;inset:0;border-radius:50%;background:var(--bord-champ)}
+  .progression li.fait::before{background:var(--encre)}
+  .progression li:not([aria-current]) span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .progression li[aria-current="step"]{width:auto;height:auto;padding:8px 12px;overflow:visible;background:var(--encre)}
+  .progression li[aria-current="step"]::before{content:none}
+  /* Barre « prix + Continuer » collée en bas du formulaire une fois la question passée ; libre tant que la question n'est pas à l'écran */
+  .nav-etapes{position:sticky;bottom:0;z-index:5;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 12px;margin:24px -20px 0;padding:12px 20px calc(16px + env(safe-area-inset-bottom));background:var(--fond);border-top:1px solid var(--bord);border-radius:0 0 33px 33px;box-shadow:0 -14px 24px -20px var(--ombre)}
+  .nav-etapes.libre{position:static;box-shadow:none}
+  .nav-prix{display:block;grid-column:1/-1;font-weight:600;font-size:15px;font-variant-numeric:tabular-nums}
+  .nav-prix:empty{display:none}
+  #suivant{width:100%}
+
+  .barre{display:block;position:fixed;left:12px;right:12px;bottom:12px;z-index:40;transition:transform .3s var(--sortie),opacity .3s}
+  .barre .btn{width:100%;justify-content:space-between;box-shadow:0 16px 30px -12px var(--ombre)}
+  .barre.cachee{transform:translateY(120%);opacity:0;visibility:hidden;pointer-events:none}
+  .pied{padding-bottom:110px}
+  .pied .conteneur{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:767px) and (max-height:720px){
+  .accueil{gap:10px;padding-block:10px}
+  h1{font-size:38px}
+  .sous{font-size:16px;line-height:1.4}
+  .tarifs-ligne{padding-top:10px;gap:2px 16px}
+  .niche{width:min(100%,420px,calc(clamp(170px,100svh - 430px,480px) * .75))}
+}
+@media (max-width:520px){
+  .carte-prix{grid-template-columns:minmax(0,1fr)}
+  .options.deux{grid-template-columns:minmax(0,1fr)}
+  .lignes dt{font-size:18px}
+  .lignes dd{font-size:19px}
+}
+@media (max-height:500px){
+  .entete{position:static}
+  html{scroll-padding-top:12px}
+  .barre{display:none}
+  .nav-etapes{position:static;box-shadow:none}
+}
+
+/* ---------- 14. Mouvement réduit : rien ne bouge tout seul, fondus courts ---------- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.15s!important;transition-property:opacity,background-color,border-color,color!important}
+}
