@@ -56,6 +56,10 @@ p{text-wrap:pretty}
 .nav ul{display:flex;gap:30px;list-style:none;padding:0;font-weight:500;font-size:15.5px}
 .nav a{text-decoration:none;padding:12px 0}
 .nav a:hover{color:var(--or-texte)}
+/* le bouton de l'en-tête s'efface tant que le bouton doré de l'accueil est à l'écran (classe posée par le script) */
+.entete .btn{transition:opacity .25s var(--sortie),visibility .25s,background .2s,transform .2s var(--sortie)}
+.entete.cta-cache .btn{opacity:0;visibility:hidden;pointer-events:none}
+@media (min-width:768px){.nav-composer{display:none}}
 .menu-btn{display:none;min-height:44px;border:1.5px solid var(--encre);background:none;border-radius:999px;padding:0 18px;font-weight:600;font-size:15px;cursor:pointer}
 
 /* ---------- 5. Accueil et scène ----------
@@ -65,6 +69,8 @@ p{text-wrap:pretty}
 .scene{background:var(--surface)}
 .accueil{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(24px,4vw,72px);align-items:center;padding-block:clamp(28px,4vw,56px)}
 .accueil-texte{display:flex;flex-direction:column;align-items:flex-start;gap:20px}
+/* --fondu : posé par le script pendant que la section Créations monte par-dessus l'accueil */
+.accueil-texte > *{opacity:var(--fondu,1)}
 h1{font-size:clamp(46px,5.6vw,86px);line-height:.98;letter-spacing:-.04em}
 .sous{font-size:18.5px;color:var(--doux);max-width:42ch}
 .tarifs-ligne{display:flex;gap:6px 24px;flex-wrap:wrap;margin-top:4px;padding-top:18px;border-top:1px solid var(--bord);font-size:15.5px;color:var(--doux);align-self:stretch}
@@ -79,7 +85,7 @@ h1{font-size:clamp(46px,5.6vw,86px);line-height:.98;letter-spacing:-.04em}
 .tourne.touche .tourne-indice{opacity:0}
 html:not(.scene-on) .tourne-indice svg{display:none}
 
-.scene-on .scene{height:270svh;margin-top:calc(-1 * var(--entete))}
+.scene-on .scene{height:250svh;margin-top:calc(-1 * var(--entete))}
 .scene-on .scene-colle{position:sticky;top:0;height:100svh;padding-top:var(--entete);display:flex;flex-direction:column;justify-content:center}
 .scene-on .scene > .tourne{position:fixed;left:0;top:0;z-index:2;transform-origin:0 0;will-change:transform;visibility:hidden}
 .scene-on .scene > .tourne.pret{visibility:visible}
@@ -99,6 +105,23 @@ html:not(.scene-on) .tourne-indice svg{display:none}
   .scene-on .tourne-indice{display:none}
   /* l'arche laisse sous elle la place du récit, même sur un portable peu haut (1280 × 720) */
   .scene-on .niche{width:min(44vw,calc(min(100svh - var(--entete) - 150px,720px) * .75))}
+}
+
+/* Tablette en portrait (768 à 1024 px de large) : en deux colonnes, l'arche restait petite et le contenu flottait au milieu
+   d'un écran très haut. Ici, une colonne comme sur téléphone, avec une grande arche ; le bouton garde sa largeur naturelle. */
+@media (min-width:768px) and (max-width:1024px) and (orientation:portrait){
+  .accueil{display:flex;flex-direction:column;align-items:stretch;gap:20px;padding-block:40px 24px}
+  .scene-on .scene-colle{justify-content:flex-start}
+  .accueil-texte{display:contents}
+  h1{order:1}
+  .sous{order:2;max-width:46ch}
+  .accueil-texte .btn{order:3;align-self:flex-start}
+  .niche,.scene-on .niche{order:4;align-self:center;width:min(100%,560px,calc(clamp(300px,100svh - 440px,760px) * .75))}
+  .tarifs-ligne{order:5;margin-top:0;transition:opacity .3s}
+  .scene-on .tourne-indice{display:flex}
+  .scene-on .recit{top:calc(100% + 16px);opacity:0}
+  .recit-actif .recit{opacity:1}
+  .recit-actif .tarifs-ligne{opacity:0}
 }
 
 /* ---------- 6. Sections ---------- */
@@ -318,13 +341,13 @@ fieldset.groupe{border:0;padding:0;min-width:0}
 @media (max-width:767px){
   html{scroll-padding-bottom:150px}
   /* Accueil : tout le premier écran tient en une colonne ; la hauteur du gâteau se calcule pour laisser la place au bouton et aux prix */
-  .accueil{display:flex;flex-direction:column;align-items:stretch;gap:14px;padding-block:14px}
+  .accueil{display:flex;flex-direction:column;align-items:stretch;gap:14px;padding-block:28px 14px}
   .scene-on .scene-colle{justify-content:flex-start}
   .accueil-texte{display:contents}
   h1{order:1;font-size:44px}
   .sous{order:2;font-size:16.5px;max-width:none}
   .accueil-texte .btn{order:3;width:100%}
-  .niche{order:4;align-self:center;width:min(100%,420px,calc(clamp(190px,100svh - 478px,480px) * .75))}
+  .niche{order:4;align-self:center;width:min(100%,420px,calc(clamp(190px,100svh - 492px,480px) * .75))}
   .tourne{border-radius:999px 999px 28px 28px}
   .tarifs-ligne{order:5;font-size:16px;gap:4px 18px;margin-top:0;padding-top:14px;transition:opacity .3s}
   html:not(.scene-on) .niche{width:min(100%,420px)}
@@ -371,11 +394,11 @@ fieldset.groupe{border:0;padding:0;min-width:0}
   .pied .conteneur{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:767px) and (max-height:720px){
-  .accueil{gap:10px;padding-block:10px}
+  .accueil{gap:10px;padding-block:22px 10px}
   h1{font-size:38px}
   .sous{font-size:16px;line-height:1.4}
   .tarifs-ligne{padding-top:10px;gap:2px 16px}
-  .niche{width:min(100%,420px,calc(clamp(170px,100svh - 430px,480px) * .75))}
+  .niche{width:min(100%,420px,calc(clamp(170px,100svh - 442px,480px) * .75))}
 }
 @media (max-width:520px){
   .carte-prix{grid-template-columns:minmax(0,1fr)}
