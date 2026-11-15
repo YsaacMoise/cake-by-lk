@@ -180,7 +180,7 @@
         rayonTuile = parseFloat(getComputedStyle($('.tuile-photo', place) || place.firstElementChild).borderTopLeftRadius) || 18;
         rayonBas = innerWidth < 768 ? 28 : 36;
         boite.classList.add('pret');
-        indice.textContent = 'Faites défiler pour le voir tourner';
+        indice.textContent = '';
       } else {
         if (boite.parentElement !== niche) niche.appendChild(boite);
         boite.removeAttribute('style'); boite.classList.remove('pret', 'range'); place.classList.remove('visible'); blocsTete.forEach((b) => { b.style.opacity = ''; });
@@ -196,7 +196,7 @@
     /* Le récit du tour : une phrase par tiers de tour, tirée de la fiche du gâteau et de la carte ; les trois traits se remplissent */
     const recit = $('#recit'), recitTexte = $('#recitTexte'), traits = recit ? $$('.recit-barre i', recit) : [];
     const RECIT = [
-      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16M6 14l6 6 6-6"/></svg>Faites défiler pour le voir tourner`,
+      '', // avant le premier tour : rien d'écrit, la rotation garde sa surprise (demande de YKM)
       'Un layer cake aux géodes roses',
       'De 15 à 25 parts',
       'Votre prénom en lettres d’or',
@@ -399,15 +399,6 @@
     demande.gateau = t; demande.occasion = t === 'number' ? 'Anniversaire' : t === 'wedding' ? 'Mariage' : demande.occasion;
     refFinale = ''; allerA(demande.occasion ? 1 : 0); versFormulaire();
   }));
-  const saveursBtns = $$('.saveurs-liste [role="tab"]');
-  const choisirSaveur = (b) => {
-    saveursBtns.forEach((x) => { const oui = x === b; x.setAttribute('aria-selected', oui); x.tabIndex = oui ? 0 : -1; });
-    $('#saveurDetail').setAttribute('aria-labelledby', b.id);
-    const img = $('#saveurImg'); img.src = `${b.dataset.img}-480.webp`; img.alt = b.dataset.alt;
-    $('#saveurNom').textContent = b.textContent.trim(); $('#saveurDesc').textContent = b.dataset.desc;
-  };
-  saveursBtns.forEach((b) => b.addEventListener('click', () => choisirSaveur(b)));
-  ongletsClavier(saveursBtns, choisirSaveur);
 
   /* ---------- Les écrans du formulaire ---------- */
   const option = (name, val, o) => {
