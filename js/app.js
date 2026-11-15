@@ -75,8 +75,14 @@
 
   /* ---------- Barre fixe (téléphone) : cachée quand le bouton doré, la commande ou le pied sont à l'écran, et pendant une saisie ---------- */
   const barre = $('#barre');
-  const vus = { bouton: false, commander: false, pied: false, saisie: false };
-  const majBarre = () => barre.classList.toggle('cachee', Object.values(vus).some(Boolean));
+  const vus = { bouton: false, commander: false, pied: false, saisie: false, couvert: false };
+  // le bouton doré compte comme visible seulement s'il n'est pas recouvert par la section Créations (il reste collé dans l'accueil)
+  const majBarre = () => {
+    const dore = vus.bouton && !vus.couvert;
+    barre.classList.toggle('cachee', dore || vus.commander || vus.pied || vus.saisie);
+    // ordinateur et tablette : le bouton de l'en-tête attend que le bouton doré quitte l'écran, pour ne jamais en montrer deux
+    entete.classList.toggle('cta-cache', dore);
+  };
   const observer = (el, cle, seuil) => new IntersectionObserver(([e]) => { vus[cle] = e.isIntersecting; majBarre(); }, { threshold: seuil }).observe(el);
   observer($('#commander'), 'commander', 0.05);
   observer($('#heroBtn'), 'bouton', 0.5);
@@ -106,7 +112,8 @@
     const sceneEl = $('.scene'), colle = $('.scene-colle'), niche = $('#niche'), boite = $('#tourne'), toile = $('#tourneToile');
     const place = $('.tuile.place'), mini = $('.tourne-mini'), indice = $('#tourneIndice span'), creations = $('#creations'), blocsTete = [...$('.creations .section-tete').children];
     if (!boite || !toile || !place) return;
-    const N = +boite.dataset.n, base = boite.dataset.base, taille = innerWidth < 600 ? 480 : 720;
+    // 720 px dès que l'écran est large ou à haute densité (téléphones récents) : en 480, l'arche était agrandie presque deux fois et floue
+    const N = +boite.dataset.n, base = boite.dataset.base, taille = innerWidth >= 600 || devicePixelRatio >= 2 ? 720 : 480;
     const toiles = [toile, mini].map((t) => [t, t.getContext('2d')]);
     const eco = navigator.connection && navigator.connection.saveData;
     const imgs = new Array(N), prete = new Array(N).fill(false);
@@ -179,12 +186,14 @@
       requestAnimationFrame(() => { if (scrollY < finConnue - 1) scrollTo({ top: finConnue, behavior: 'instant' }); });
     });
 
-    let finConnue = Infinity;
+    let finConnue = Infinity, fonduAccueil = '';
+    const accueilEl = $('.accueil'), texteAccueil = $$('.accueil-texte > *');
     function cadre() {
       let p = 0, e = 0;
       if (sceneOn && scrollY > finConnue + innerHeight) {
         // loin sous la scène : le gâteau est rangé, rien à recalculer
         p = 1; e = 1;
+        if (!vus.couvert) { vus.couvert = true; majBarre(); }
         if (!boite.classList.contains('range')) { boite.classList.add('range'); place.classList.add('visible'); blocsTete.forEach((b) => { b.style.opacity = ''; }); }
       } else if (sceneOn) {
         const libre = !place.hidden; // un filtre peut cacher la case : le gâteau vise alors la première tuile visible et s'efface
@@ -219,6 +228,15 @@
         place.classList.toggle('visible', range);
         if (p > 0.02) boite.classList.add('touche');
         raconter(p, e);
+        // le texte de l'accueil s'efface pendant que la section Créations monte : jamais un titre coupé à moitié derrière elle
+        const rideau = creations.getBoundingClientRect().top;
+        // fondu calé sur le bas du texte encore visible (la ligne des prix, sauf quand le récit l'a remplacée) : fini avant que le panneau ne le touche
+        const bas = Math.max(...texteAccueil.filter((el) => !(el.matches('.tarifs-ligne') && racine.classList.contains('recit-actif') && getComputedStyle(el).opacity === '0')).map((el) => el.getBoundingClientRect().bottom));
+        const f = borne((rideau - bas - 12) / (innerHeight * 0.25));
+        const fs = f > 0.995 ? '' : f.toFixed(3);
+        if (fs !== fonduAccueil) { fonduAccueil = fs; accueilEl.style.setProperty('--fondu', fs || 1); }
+        const couvert = f < 0.5;
+        if (couvert !== vus.couvert) { vus.couvert = couvert; majBarre(); }
       }
       // un tour exact sur le trajet ; ce que la main a ajouté s'efface à l'approche du mur pour que le gâteau arrive de face
       const cibleAngle = sceneOn ? main * (1 - e) + N * p : main;
