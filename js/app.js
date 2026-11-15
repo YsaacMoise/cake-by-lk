@@ -25,11 +25,11 @@
   const DOUCEUR = 3;
   const PART_MARIAGE = 5;
   const SAVEURS = [
-    { nom: 'Le 3 chocolat', img: 'img/coupe-3-chocolat-160.webp', desc: 'Génoise chocolat, ganache chocolat au lait, croustillant praliné, ganache chocolat blanc' },
-    { nom: 'Le Bueno', img: 'img/coupe-bueno-160.webp', desc: 'Génoise chocolat, ganache chocolat au lait, crème de noisette maison, morceaux de Kinder Bueno' },
-    { nom: 'Le Fraisier', img: 'img/coupe-fraisier-160.webp', desc: 'Génoise vanille, coulis fraise, morceaux de fraises fraîches' },
-    { nom: 'Le Framboisier', img: 'img/coupe-framboisier-160.webp', desc: 'Génoise vanille, ganache chocolat blanc vanille, coulis framboise, morceaux de framboises fraîches' },
-    { nom: 'Le Specaramel', img: 'img/coupe-specaramel-160.webp', desc: 'Génoise vanille, ganache vanille, coulis de caramel beurre salé, éclats de speculos' },
+    { nom: 'Le 3 chocolat', img: 'img/coupe-3-chocolat-arche.webp', iw: 48, ih: 64, cls: 'saveur', desc: 'Génoise chocolat, ganache chocolat au lait, croustillant praliné, ganache chocolat blanc' },
+    { nom: 'Le Bueno', img: 'img/coupe-bueno-arche.webp', iw: 48, ih: 64, cls: 'saveur', desc: 'Génoise chocolat, ganache chocolat au lait, crème de noisette maison, morceaux de Kinder Bueno' },
+    { nom: 'Le Fraisier', img: 'img/coupe-fraisier-arche.webp', iw: 48, ih: 64, cls: 'saveur', desc: 'Génoise vanille, coulis fraise, morceaux de fraises fraîches' },
+    { nom: 'Le Framboisier', img: 'img/coupe-framboisier-arche.webp', iw: 48, ih: 64, cls: 'saveur', desc: 'Génoise vanille, ganache chocolat blanc vanille, coulis framboise, morceaux de framboises fraîches' },
+    { nom: 'Le Specaramel', img: 'img/coupe-specaramel-arche.webp', iw: 48, ih: 64, cls: 'saveur', desc: 'Génoise vanille, ganache vanille, coulis de caramel beurre salé, éclats de speculos' },
   ];
   /* HYPOTHÈSE à faire confirmer par LK (accord de YKM le 14/11) : la carte ne dit pas quelles saveurs existent en number cake.
      Ces deux garnitures sont celles que l'on voit sur ses number cakes publiés (le 18 et le 50). */
@@ -453,7 +453,7 @@
       if (g[0] === 'wedding') return `<div class="etape"><h3 id="q-etape">Votre wedding cake</h3><p class="aide">Le prix se fait sur devis, selon le nombre d’invités.</p><div id="tailles">${tailles()}</div></div>`;
       return `<div class="etape"><h3 id="q-etape">Votre layer cake</h3><p class="aide">Choisissez la taille.</p><div id="tailles">${tailles()}</div></div>`;
     },
-    () => `<div class="etape"><h3 id="q-etape">Quelle saveur ?</h3>${demande.gateau === 'number' ? '<p class="aide">Je vous confirme la garniture en vous répondant.</p>' : ''}${groupe('saveur', saveursPour(demande.gateau).map(s => ({ v: s.nom, l: s.nom, s: s.desc, img: s.img })), demande.saveur)}</div>`,
+    () => `<div class="etape"><h3 id="q-etape">Quelle saveur ?</h3>${demande.gateau === 'number' ? '<p class="aide">Je vous confirme la garniture en vous répondant.</p>' : ''}${groupe('saveur', saveursPour(demande.gateau).map(s => ({ v: s.nom, l: s.nom, s: s.desc, img: s.img, iw: s.iw, ih: s.ih, cls: s.cls })), demande.saveur)}</div>`,
     () => { const d = decorPour(); return `<div class="etape"><h3 id="q-etape">Quel décor ?</h3><p class="aide">${d.aide}</p>
       <div class="champ"><label for="f-texte">${d.label}</label><input id="f-texte" name="texte" maxlength="40" value="${esc(demande.texte)}" placeholder="${d.exemple}"><p class="apercu-decor" id="apercuDecor" aria-hidden="true">${esc(demande.texte) || d.vide}</p></div>
       ${champTheme()}
